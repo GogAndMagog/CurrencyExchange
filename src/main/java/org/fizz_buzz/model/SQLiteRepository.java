@@ -11,8 +11,15 @@ public class SQLiteRepository implements Repository {
 
     public String getUsers() {
         StringBuilder users = new StringBuilder();
+        users.append("Test SELECT:");
 
         String name = "jdbc:sqlite::resource:ex1.db";
+
+        try {
+            Class.forName("org.sqlite.JDBC");
+        } catch (ClassNotFoundException e) {
+            users.append(e.getMessage());
+        }
 
         try (Connection connection = DriverManager.getConnection(name);
              Statement statement = connection.createStatement()) {
@@ -20,7 +27,7 @@ public class SQLiteRepository implements Repository {
 
                 while (resultSet.next()) {
                     users.append("""
-                            Id: %d Name: %s Lastname: %s Age: %d
+                            Id: %d Name: %s Lastname: %s Age: %d \n\r
                             """.formatted(Integer.parseInt(resultSet.getString("id")),
                             resultSet.getString("name"),
                             resultSet.getString("lastname"),
@@ -28,7 +35,8 @@ public class SQLiteRepository implements Repository {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            users.append(e.getMessage());
+//            throw new RuntimeException(e);
         }
 
         return users.toString();
