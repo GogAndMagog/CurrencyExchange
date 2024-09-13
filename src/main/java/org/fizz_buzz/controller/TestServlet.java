@@ -27,7 +27,7 @@ public class TestServlet extends HttpServlet {
         PrintWriter out = response.getWriter();
         out.println("<html><body>");
         out.println("<h1>444LifecycleServlet at your service!</h1>");
-        Repository repository = new SQLiteRepository();
+        Repository repository = SQLiteRepository.getInstance();
         try {
             repository.putUser();
         }

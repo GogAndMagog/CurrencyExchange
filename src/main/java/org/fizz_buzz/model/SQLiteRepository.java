@@ -1,27 +1,44 @@
 package org.fizz_buzz.model;
 
+import org.fizz_buzz.controller.CurrencyModel;
+
 import java.sql.DriverManager;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SQLiteRepository implements Repository {
-    private final String dbUrl = "jdbc:sqlite:C:\\Users\\user\\IdeaProjects\\Currency Exchange\\src\\main\\resources\\ex1.db";
+
+    private final String DB_URL = "jdbc:sqlite::resource:ex1.db";
+    private final static String SQLITE_JDBC_DRIVER = "org.sqlite.JDBC";
+    private volatile static Repository instance;
+
+    private SQLiteRepository() {
+    }
+
+    public synchronized static Repository getInstance() {
+        if (instance == null) {
+            instance = new SQLiteRepository();
+        }
+        return instance;
+    }
+
+    static {
+        try {
+            Class.forName(SQLITE_JDBC_DRIVER);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public String getUsers() {
         StringBuilder users = new StringBuilder();
         users.append("Test SELECT:");
 
-        String name = "jdbc:sqlite::resource:ex1.db";
-
-        try {
-            Class.forName("org.sqlite.JDBC");
-        } catch (ClassNotFoundException e) {
-            users.append(e.getMessage());
-        }
-
-        try (Connection connection = DriverManager.getConnection(name);
+        try (Connection connection = DriverManager.getConnection(DB_URL);
              Statement statement = connection.createStatement()) {
             try (ResultSet resultSet = statement.executeQuery("SELECT * FROM users")) {
 
@@ -36,7 +53,6 @@ public class SQLiteRepository implements Repository {
             }
         } catch (SQLException e) {
             users.append(e.getMessage());
-//            throw new RuntimeException(e);
         }
 
         return users.toString();
@@ -44,24 +60,42 @@ public class SQLiteRepository implements Repository {
 
     @Override
     public void putUser() {
-        String name = "jdbc:sqlite::resource:ex1.db";
 
-        try (Connection connection = DriverManager.getConnection(name);
+        try (Connection connection = DriverManager.getConnection(DB_URL);
              Statement statement = connection.createStatement()) {
             var rs = statement.executeQuery("SELECT COUNT(*) AS rowsNumber FROM users");
             int rowsNumber;
             if (rs.next()) {
                 rowsNumber = rs.getInt("rowsNumber");
-            }
-            else {
+            } else {
                 System.out.println("No rows found");
                 return;
             }
 
             statement.executeUpdate(
-                        "INSERT INTO users (id, name, lastname, age) VALUES(%s, 'TestName', 'TestLastName', 2);".formatted(rowsNumber));
+                    "INSERT INTO users (id, name, lastname, age) VALUES(%s, 'TestName', 'TestLastName', 2);".formatted(rowsNumber));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public List<CurrencyModel> getCurrencies() {
+        List<CurrencyModel> currencies = new ArrayList<>();
+
+        try (Connection connection = DriverManager.getConnection(DB_URL);
+             Statement statement = connection.createStatement()) {
+            var rs = statement.executeQuery("SELECT * FROM currencies");
+            while (rs.next()) {
+                currencies.add(new CurrencyModel(rs.getInt("ID"),
+                        rs.getString("Code"),
+                        rs.getString("FullName"),
+                        rs.getString("Sign")));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return currencies;
     }
 }
