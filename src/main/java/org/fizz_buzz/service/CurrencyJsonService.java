@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.fizz_buzz.model.Repository;
 import org.fizz_buzz.model.SQLiteRepository;
 
+import java.util.Currency;
+
 public class CurrencyJsonService {
 
     private volatile static CurrencyJsonService instance;
@@ -27,6 +29,19 @@ public class CurrencyJsonService {
         try {
             return objectMapper.writeValueAsString(repository.getCurrencies());
         } catch (JsonProcessingException | RuntimeException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String getCurrency(String currCode) {
+        try {
+            var currency = repository.getCurrency(currCode);
+            if (currency != null) {
+                return objectMapper.writeValueAsString(repository.getCurrency(currCode));
+            } else {
+                return "";
+            }
+        } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
     }

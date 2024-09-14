@@ -8,4 +8,6 @@ public interface Repository {
     String getUsers();
     void putUser();
     List<CurrencyModel> getCurrencies();
+    CurrencyModel getCurrency(String currCode);
+//    void addCurrency(CurrencyModel currency);
 }
