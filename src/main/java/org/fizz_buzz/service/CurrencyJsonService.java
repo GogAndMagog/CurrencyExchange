@@ -26,7 +26,7 @@ public class CurrencyJsonService {
     public String getCurrencies() {
         try {
             return objectMapper.writeValueAsString(repository.getCurrencies());
-        } catch (JsonProcessingException e) {
+        } catch (JsonProcessingException | RuntimeException e) {
             throw new RuntimeException(e);
         }
     }
