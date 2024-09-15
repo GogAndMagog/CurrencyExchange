@@ -8,4 +8,5 @@ public interface Repository {
     List<CurrencyModel> getCurrencies();
     CurrencyModel getCurrency(String currCode);
     void addCurrency(CurrencyModel currency);
+    List<ExchangeRateModel> getExchangeRates();
 }

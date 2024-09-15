@@ -53,4 +53,12 @@ public class CurrencyJsonService {
             throw new RuntimeException(e);
         }
     }
+
+    public String getExchangeRates() {
+        try {
+            return objectMapper.writeValueAsString(repository.getExchangeRates());
+        } catch (JsonProcessingException | RuntimeException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

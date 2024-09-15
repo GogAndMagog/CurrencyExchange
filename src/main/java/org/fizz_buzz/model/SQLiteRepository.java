@@ -127,4 +127,42 @@ public class SQLiteRepository implements Repository {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public List<ExchangeRateModel> getExchangeRates() {
+        List<ExchangeRateModel> exchangeRates = new ArrayList<>();
+
+        try (Connection connection = DriverManager.getConnection(DB_URL);
+             Statement statement = connection.createStatement()) {
+            var rs = statement.executeQuery("""
+                    SELECT ExchangeRates.ID,
+                           BaseCurrencies.*,
+                           TargetCurrencies.*,
+                           ExchangeRates.Rate
+                    FROM ExchangeRates
+                             JOIN Currencies AS BaseCurrencies
+                                  ON ExchangeRates.BaseCurrencyId = BaseCurrencies.ID
+                             JOIN Currencies AS TargetCurrencies
+                                  ON ExchangeRates.TargetCurrencyId = TargetCurrencies.ID;""");
+
+            while (rs.next()) {
+                exchangeRates.add(
+                        new ExchangeRateModel(Integer.parseInt(rs.getString(1)),
+                                new CurrencyModel(Integer.parseInt(rs.getString(2)),
+                                        rs.getString(3),
+                                        rs.getString(4),
+                                        rs.getString(5)),
+                                new CurrencyModel(Integer.parseInt(rs.getString(6)),
+                                        rs.getString(7),
+                                        rs.getString(8),
+                                        rs.getString(9)),
+                                Double.parseDouble(rs.getString(10))));
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return exchangeRates;
+    }
 }
