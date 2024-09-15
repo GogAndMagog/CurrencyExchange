@@ -9,5 +9,5 @@ public interface Repository {
     void putUser();
     List<CurrencyModel> getCurrencies();
     CurrencyModel getCurrency(String currCode);
-//    void addCurrency(CurrencyModel currency);
+    void addCurrency(CurrencyModel currency);
 }

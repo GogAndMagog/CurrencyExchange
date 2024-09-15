@@ -119,21 +119,14 @@ public class SQLiteRepository implements Repository {
         return currency;
     }
 
-//    @Override
-//    public void addCurrency(CurrencyModel currency) {
-//        try (Connection connection = DriverManager.getConnection(DB_URL);
-//             Statement statement = connection.createStatement()) {
-//            var rs = statement.executeQuery("INSERT into  Currencies (code, fullname, sign)\n" +
-//                    "values ('%s', '%s', '%s');".formatted(currency.));
-//            if (rs.next()) {
-//                currency = new CurrencyModel(rs.getInt("ID"),
-//                        rs.getString("Code"),
-//                        rs.getString("FullName"),
-//                        rs.getString("Sign"));
-//            }
-//        } catch (SQLException e) {
-//            throw new RuntimeException(e);
-//        }
-//
-//    }
+    @Override
+    public void addCurrency(CurrencyModel currency) {
+        try (Connection connection = DriverManager.getConnection(DB_URL);
+             Statement statement = connection.createStatement()) {
+            statement.executeUpdate("INSERT into  Currencies (code, fullname, sign)\n" +
+                    "values ('%s', '%s', '%s');".formatted(currency.code(), currency.fullName(), currency.sign()));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

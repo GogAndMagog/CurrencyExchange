@@ -27,4 +27,24 @@ public class GetCurrenciesServlet extends HttpServlet {
             resp.setContentType("text/plain");
         }
     }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        var code = req.getParameter("code");
+        var name = req.getParameter("name");
+        var sign = req.getParameter("sign");
+
+        if (code == null || name == null || sign == null) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameters");
+        }
+
+        try {
+            var answer =  CurrencyJsonService.getInstance().addCurrency(code, name, sign);
+            resp.setStatus(HttpServletResponse.SC_CREATED);
+            resp.setContentType("application/json");
+            resp.getWriter().println(answer);
+        } catch (Exception e) {
+            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
 }

@@ -2,6 +2,7 @@ package org.fizz_buzz.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.fizz_buzz.controller.CurrencyModel;
 import org.fizz_buzz.model.Repository;
 import org.fizz_buzz.model.SQLiteRepository;
 
@@ -41,6 +42,15 @@ public class CurrencyJsonService {
             } else {
                 return "";
             }
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String addCurrency(String currCode, String name, String sign) {
+        repository.addCurrency(new CurrencyModel(-1, currCode.toUpperCase(), name, sign));
+        try {
+            return objectMapper.writeValueAsString(repository.getCurrency(currCode));
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
