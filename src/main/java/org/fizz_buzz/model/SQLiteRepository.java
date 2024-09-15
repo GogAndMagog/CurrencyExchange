@@ -165,4 +165,44 @@ public class SQLiteRepository implements Repository {
 
         return exchangeRates;
     }
+
+    @Override
+    public ExchangeRateModel getExchangeRate(String baseCurrency, String targetCurrency) {
+        ExchangeRateModel exchangeRate = null;
+
+        try (Connection connection = DriverManager.getConnection(DB_URL);
+             Statement statement = connection.createStatement()) {
+            var rs = statement.executeQuery("""
+                    SELECT ExchangeRates.ID,
+                           BaseCurrencies.*,
+                           TargetCurrencies.*,
+                           ExchangeRates.Rate
+                    FROM ExchangeRates
+                             JOIN Currencies AS BaseCurrencies
+                                  ON ExchangeRates.BaseCurrencyId = BaseCurrencies.ID
+                             JOIN Currencies AS TargetCurrencies
+                                  ON ExchangeRates.TargetCurrencyId = TargetCurrencies.ID
+                               WHERE BaseCurrencies.Code = '%s'
+                                 AND TargetCurrencies.Code = '%s'""".formatted(baseCurrency, targetCurrency));
+
+            if (rs.next()) {
+                exchangeRate =
+                        new ExchangeRateModel(Integer.parseInt(rs.getString(1)),
+                                new CurrencyModel(Integer.parseInt(rs.getString(2)),
+                                        rs.getString(3),
+                                        rs.getString(4),
+                                        rs.getString(5)),
+                                new CurrencyModel(Integer.parseInt(rs.getString(6)),
+                                        rs.getString(7),
+                                        rs.getString(8),
+                                        rs.getString(9)),
+                                Double.parseDouble(rs.getString(10)));
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return exchangeRate;
+    }
 }

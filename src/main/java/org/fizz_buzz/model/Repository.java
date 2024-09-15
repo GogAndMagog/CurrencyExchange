@@ -9,4 +9,5 @@ public interface Repository {
     CurrencyModel getCurrency(String currCode);
     void addCurrency(CurrencyModel currency);
     List<ExchangeRateModel> getExchangeRates();
+    ExchangeRateModel getExchangeRate(String baseCurrency, String targetCurrency);
 }

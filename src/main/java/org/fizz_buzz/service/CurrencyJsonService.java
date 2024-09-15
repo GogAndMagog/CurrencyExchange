@@ -61,4 +61,17 @@ public class CurrencyJsonService {
             throw new RuntimeException(e);
         }
     }
+
+    public String getExchangeRate(String basesCode, String targetCode) {
+        try {
+            var exchangeRate = repository.getExchangeRate(basesCode, targetCode);
+            if (exchangeRate != null) {
+                return objectMapper.writeValueAsString(exchangeRate);
+            } else {
+                return "";
+            }
+        } catch (JsonProcessingException | RuntimeException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
