@@ -1,7 +1,5 @@
 package org.fizz_buzz.model;
 
-import org.fizz_buzz.controller.CurrencyModel;
-
 import java.sql.DriverManager;
 import java.sql.Connection;
 import java.sql.ResultSet;

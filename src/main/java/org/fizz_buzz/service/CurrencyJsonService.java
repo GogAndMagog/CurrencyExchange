@@ -2,11 +2,9 @@ package org.fizz_buzz.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.fizz_buzz.controller.CurrencyModel;
+import org.fizz_buzz.model.CurrencyModel;
 import org.fizz_buzz.model.Repository;
 import org.fizz_buzz.model.SQLiteRepository;
-
-import java.util.Currency;
 
 public class CurrencyJsonService {
 
