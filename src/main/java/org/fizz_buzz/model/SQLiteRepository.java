@@ -205,4 +205,23 @@ public class SQLiteRepository implements Repository {
 
         return exchangeRate;
     }
+
+    @Override
+    public void addExchangeRate(String baseCurrencyCode, String targetCurrencyCode, Double rate) {
+        try (Connection connection = DriverManager.getConnection(DB_URL);
+             Statement statement = connection.createStatement()) {
+            statement.executeUpdate("""
+                    INSERT INTO ExchangeRates (BaseCurrencyId, TargetCurrencyId, Rate)
+                    SELECT BaseCurrency.ID,
+                           TargetCurrency.ID,
+                           %s
+                    FROM Currencies AS BaseCurrency
+                             JOIN Currencies AS TargetCurrency
+                    WHERE BaseCurrency.Code = '%s'
+                      AND TargetCurrency.Code = '%s';"""
+                    .formatted(rate, baseCurrencyCode, targetCurrencyCode));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
