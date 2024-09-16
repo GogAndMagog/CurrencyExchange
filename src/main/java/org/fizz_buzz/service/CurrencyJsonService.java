@@ -11,6 +11,7 @@ public class CurrencyJsonService {
     private volatile static CurrencyJsonService instance;
     private final Repository repository;
     private final ObjectMapper objectMapper;
+    private static final String USD_CURR_CODE = "USD";
 
     private CurrencyJsonService(Repository repository) {
         this.repository = repository;
@@ -84,15 +85,62 @@ public class CurrencyJsonService {
         }
     }
 
-    public String updateExchangeRate(String baseCurrencyCode, String targetCurrencyCode, double rate){
+    public String updateExchangeRate(String baseCurrencyCode, String targetCurrencyCode, double rate) {
         try {
             repository.updateExchangeRate(baseCurrencyCode, targetCurrencyCode, rate);
             var updatedExchangeRate = repository.getExchangeRate(baseCurrencyCode, targetCurrencyCode);
             if (updatedExchangeRate != null) {
                 return objectMapper.writeValueAsString(updatedExchangeRate);
+            } else {
+                return "";
             }
-            else{
-             return "";
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String exchange(String baseCurrencyCode, String targetCurrencyCode, Double amount) {
+        ConvertedAmount convertedAmount = null;
+
+        CurrencyModel baseCurrency = null;
+        CurrencyModel targetCurrency = null;
+        double rate = 0;
+
+        try {
+            var exchangeRate = repository.getExchangeRate(baseCurrencyCode, targetCurrencyCode);
+            if (exchangeRate == null) {
+                exchangeRate = repository.getExchangeRate(targetCurrencyCode, baseCurrencyCode);
+                if (exchangeRate != null) {
+                    baseCurrency = exchangeRate.targetCurrency();
+                    targetCurrency = exchangeRate.baseCurrency();
+                    rate = 1 / exchangeRate.rate();
+                }
+            } else {
+                baseCurrency = exchangeRate.baseCurrency();
+                targetCurrency = exchangeRate.targetCurrency();
+                rate = exchangeRate.rate();
+            }
+            if (exchangeRate == null) {
+                var exchangeRateUsdBaseCurrency = repository.getExchangeRate(USD_CURR_CODE, baseCurrencyCode);
+                var exchangeRateUsdTargetCurrency = repository.getExchangeRate(USD_CURR_CODE, targetCurrencyCode);
+
+                if (exchangeRateUsdBaseCurrency != null && exchangeRateUsdTargetCurrency != null) {
+                    baseCurrency = exchangeRateUsdBaseCurrency.targetCurrency();
+                    targetCurrency = exchangeRateUsdBaseCurrency.targetCurrency();
+                    rate = exchangeRateUsdTargetCurrency.rate() / exchangeRateUsdBaseCurrency.rate();
+                }
+            }
+            if (baseCurrency != null && targetCurrency != null) {
+                convertedAmount = new ConvertedAmount(
+                        baseCurrency,
+                        targetCurrency,
+                        rate,
+                        amount,
+                        amount * rate
+                );
+                return objectMapper.writeValueAsString(convertedAmount);
+            } else {
+                return "";
             }
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
