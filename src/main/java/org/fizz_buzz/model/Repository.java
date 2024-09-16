@@ -13,4 +13,5 @@ public interface Repository {
     List<ExchangeRateModel> getExchangeRates();
     ExchangeRateModel getExchangeRate(String baseCurrency, String targetCurrency);
     void addExchangeRate(String baseCurrencyCode, String targetCurrencyCode, Double rate);
+    void updateExchangeRate(String baseCurrencyCode, String targetCurrencyCode, Double rate);
 }

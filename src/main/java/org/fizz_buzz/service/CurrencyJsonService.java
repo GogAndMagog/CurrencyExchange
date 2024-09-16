@@ -83,4 +83,19 @@ public class CurrencyJsonService {
             throw new RuntimeException(e);
         }
     }
+
+    public String updateExchangeRate(String baseCurrencyCode, String targetCurrencyCode, double rate){
+        try {
+            repository.updateExchangeRate(baseCurrencyCode, targetCurrencyCode, rate);
+            var updatedExchangeRate = repository.getExchangeRate(baseCurrencyCode, targetCurrencyCode);
+            if (updatedExchangeRate != null) {
+                return objectMapper.writeValueAsString(updatedExchangeRate);
+            }
+            else{
+             return "";
+            }
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

@@ -224,4 +224,19 @@ public class SQLiteRepository implements Repository {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public void updateExchangeRate(String baseCurrencyCode, String targetCurrencyCode, Double rate) {
+        try (Connection connection = DriverManager.getConnection(DB_URL);
+             Statement statement = connection.createStatement()) {
+            statement.executeUpdate("""
+                    UPDATE ExchangeRates
+                    SET Rate = %s
+                    WHERE ExchangeRates.BaseCurrencyId = (SELECT ID FROM Currencies WHERE Code = '%s')
+                      AND ExchangeRates.TargetCurrencyId = (SELECT ID FROM Currencies WHERE Code = '%s');"""
+                    .formatted(rate, baseCurrencyCode, targetCurrencyCode));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
