@@ -1,5 +1,6 @@
 package org.fizz_buzz.model.dao;
 
+import org.fizz_buzz.model.SQLConnectionManager;
 import org.fizz_buzz.model.entity.CurrencyEntity;
 import org.fizz_buzz.model.entity.ExchangeRateEntity;
 
@@ -28,7 +29,7 @@ public class ExchangeRateSqliteDAO implements ExchangeRateDAO {
                       AND TargetCurrency.Code = ?;
                 """;
 
-        try (Connection connection = DriverManager.getConnection(DB_URL);
+        try (Connection connection = SQLConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setDouble(1, rate);
             preparedStatement.setString(2, baseCurrencyCode);
@@ -57,7 +58,7 @@ public class ExchangeRateSqliteDAO implements ExchangeRateDAO {
                               ON ExchangeRates.BaseCurrencyId = BaseCurrencies.ID
                          JOIN Currencies AS TargetCurrencies
                               ON ExchangeRates.TargetCurrencyId = TargetCurrencies.ID""";
-        try (Connection connection = DriverManager.getConnection(DB_URL);
+        try (Connection connection = SQLConnectionManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             var rs = statement.executeQuery();
 
@@ -95,7 +96,7 @@ public class ExchangeRateSqliteDAO implements ExchangeRateDAO {
                            WHERE BaseCurrencies.Code = ?
                              AND TargetCurrencies.Code = ?""";
 
-        try (Connection connection = DriverManager.getConnection(DB_URL);
+        try (Connection connection = SQLConnectionManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, baseCurrencyCode);
             statement.setString(2, targetCurrency);
@@ -129,7 +130,7 @@ public class ExchangeRateSqliteDAO implements ExchangeRateDAO {
                 WHERE ExchangeRates.BaseCurrencyId = (SELECT ID FROM Currencies WHERE Code = ?)
                   AND ExchangeRates.TargetCurrencyId = (SELECT ID FROM Currencies WHERE Code = ?);""";
 
-        try (Connection connection = DriverManager.getConnection(DB_URL);
+        try (Connection connection = SQLConnectionManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setDouble(1, rate);
             statement.setString(2, baseCurrencyCode);

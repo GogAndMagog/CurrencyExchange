@@ -1,5 +1,6 @@
 package org.fizz_buzz.model.dao;
 
+import org.fizz_buzz.model.SQLConnectionManager;
 import org.fizz_buzz.model.entity.CurrencyEntity;
 
 import java.sql.Connection;
@@ -18,7 +19,7 @@ public class CurrencySqliteDAO implements CurrencyDAO {
     public Optional<CurrencyEntity> create(CurrencyEntity currency) {
         String query = "INSERT INTO Currencies (Code, FullName, Sign) VALUES (?, ?, ?)";
 
-        try (Connection connection = DriverManager.getConnection(DB_URL);
+        try (Connection connection = SQLConnectionManager.getConnection() ;
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, currency.code());
             statement.setString(2, currency.fullName());
@@ -44,7 +45,7 @@ public class CurrencySqliteDAO implements CurrencyDAO {
 
         CurrencyEntity currency = null;
 
-        try (Connection connection = DriverManager.getConnection(DB_URL);
+        try (Connection connection = SQLConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, id);
 
@@ -68,7 +69,7 @@ public class CurrencySqliteDAO implements CurrencyDAO {
 
         CurrencyEntity currency = null;
 
-        try (Connection connection = DriverManager.getConnection(DB_URL);
+        try (Connection connection = SQLConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, code);
 
@@ -91,7 +92,7 @@ public class CurrencySqliteDAO implements CurrencyDAO {
         List<CurrencyEntity> currencies = new ArrayList<>();
         String query = "SELECT * FROM main.Currencies";
 
-        try (Connection connection = DriverManager.getConnection(DB_URL);
+        try (Connection connection = SQLConnectionManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             var rs = statement.executeQuery();
             while (rs.next()) {
