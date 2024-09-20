@@ -7,8 +7,6 @@ import org.fizz_buzz.model.entity.CurrencyEntity;
 import org.fizz_buzz.model.dao.CurrencySqliteDAO;
 import org.fizz_buzz.model.dao.ExchangeRateDAO;
 import org.fizz_buzz.model.dao.ExchangeRateSqliteDAO;
-import org.fizz_buzz.model.Repository;
-import org.fizz_buzz.model.SQLiteRepository;
 import org.fizz_buzz.model.entity.ExchangeRateEntity;
 
 import java.util.Optional;
@@ -23,7 +21,7 @@ public class CurrencyJsonService {
     private final CurrencyDAO currencyDAO;
     private final ExchangeRateDAO exchangeRateDAO;
 
-    private CurrencyJsonService(Repository repository) {
+    private CurrencyJsonService() {
         currencyDAO = new CurrencySqliteDAO();
         exchangeRateDAO = new ExchangeRateSqliteDAO();
         objectMapper = new ObjectMapper();
@@ -31,7 +29,7 @@ public class CurrencyJsonService {
 
     public synchronized static CurrencyJsonService getInstance() {
         if (instance == null) {
-            instance = new CurrencyJsonService(SQLiteRepository.getInstance());
+            instance = new CurrencyJsonService();
         }
         return instance;
     }
