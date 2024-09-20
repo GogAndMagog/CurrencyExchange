@@ -2,19 +2,30 @@ package org.fizz_buzz.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.fizz_buzz.model.CurrencyModel;
+import org.fizz_buzz.model.dao.CurrencyDAO;
+import org.fizz_buzz.model.entity.CurrencyEntity;
+import org.fizz_buzz.model.dao.CurrencySqliteDAO;
+import org.fizz_buzz.model.dao.ExchangeRateDAO;
+import org.fizz_buzz.model.dao.ExchangeRateSqliteDAO;
 import org.fizz_buzz.model.Repository;
 import org.fizz_buzz.model.SQLiteRepository;
+import org.fizz_buzz.model.entity.ExchangeRateEntity;
+
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class CurrencyJsonService {
 
     private volatile static CurrencyJsonService instance;
-    private final Repository repository;
     private final ObjectMapper objectMapper;
     private static final String USD_CURR_CODE = "USD";
 
+    private final CurrencyDAO currencyDAO;
+    private final ExchangeRateDAO exchangeRateDAO;
+
     private CurrencyJsonService(Repository repository) {
-        this.repository = repository;
+        currencyDAO = new CurrencySqliteDAO();
+        exchangeRateDAO = new ExchangeRateSqliteDAO();
         objectMapper = new ObjectMapper();
     }
 
@@ -27,123 +38,148 @@ public class CurrencyJsonService {
 
     public String getCurrencies() {
         try {
-            return objectMapper.writeValueAsString(repository.getCurrencies());
+            return objectMapper.writeValueAsString(currencyDAO.readAll());
         } catch (JsonProcessingException | RuntimeException e) {
             throw new RuntimeException(e);
         }
     }
 
     public String getCurrency(String currCode) {
-        try {
-            var currency = repository.getCurrency(currCode);
-            if (currency != null) {
-                return objectMapper.writeValueAsString(repository.getCurrency(currCode));
-            } else {
-                return "";
-            }
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        AtomicReference<String> json = new AtomicReference<>("");
+
+        currencyDAO.readByCode(currCode)
+                .ifPresent(currencyModel -> {
+                    try {
+                        json.set(objectMapper.writeValueAsString(currencyModel));
+                    } catch (JsonProcessingException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+
+        return json.get();
     }
 
     public String addCurrency(String currCode, String name, String sign) {
-        repository.addCurrency(new CurrencyModel(-1, currCode.toUpperCase(), name, sign));
-        try {
-            return objectMapper.writeValueAsString(repository.getCurrency(currCode));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        AtomicReference<String> json = new AtomicReference<>("");
+
+        currencyDAO.create(new CurrencyEntity(-1, currCode.toUpperCase(), name, sign))
+                .ifPresent(currencyModel -> {
+                    try {
+                        json.set(objectMapper.writeValueAsString(currencyModel));
+                    } catch (JsonProcessingException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+
+        return json.get();
     }
 
     public String getExchangeRates() {
         try {
-            return objectMapper.writeValueAsString(repository.getExchangeRates());
+            return objectMapper.writeValueAsString(exchangeRateDAO.readAll());
         } catch (JsonProcessingException | RuntimeException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public String getExchangeRate(String basesCode, String targetCode) {
-        try {
-            var exchangeRate = repository.getExchangeRate(basesCode, targetCode);
-            if (exchangeRate != null) {
-                return objectMapper.writeValueAsString(exchangeRate);
-            } else {
-                return "";
-            }
-        } catch (JsonProcessingException | RuntimeException e) {
-            throw new RuntimeException(e);
-        }
+    public String getExchangeRate(String baseCurrencyCode, String targetCurrencyCode) {
+        AtomicReference<String> json = new AtomicReference<>("");
+
+        exchangeRateDAO.readByCodePair(baseCurrencyCode, targetCurrencyCode)
+                .ifPresent(currencyModel -> {
+                    try {
+                        json.set(objectMapper.writeValueAsString(currencyModel));
+                    } catch (JsonProcessingException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+
+        return json.get();
     }
 
     public String addExchangeRate(String baseCurrencyCode, String targetCurrencyCode, double rate) {
-        try {
-            repository.addExchangeRate(baseCurrencyCode, targetCurrencyCode, rate);
-            return objectMapper.writeValueAsString(repository.getExchangeRate(baseCurrencyCode, targetCurrencyCode));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        AtomicReference<String> json = new AtomicReference<>("");
+
+        exchangeRateDAO.create(baseCurrencyCode, targetCurrencyCode, rate)
+                .ifPresent(currencyModel -> {
+                    try {
+                        json.set(objectMapper.writeValueAsString(currencyModel));
+                    } catch (JsonProcessingException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+
+        return json.get();
     }
 
     public String updateExchangeRate(String baseCurrencyCode, String targetCurrencyCode, double rate) {
-        try {
-            repository.updateExchangeRate(baseCurrencyCode, targetCurrencyCode, rate);
-            var updatedExchangeRate = repository.getExchangeRate(baseCurrencyCode, targetCurrencyCode);
-            if (updatedExchangeRate != null) {
-                return objectMapper.writeValueAsString(updatedExchangeRate);
-            } else {
-                return "";
-            }
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        AtomicReference<String> json = new AtomicReference<>("");
+
+        exchangeRateDAO.updateRate(baseCurrencyCode, targetCurrencyCode, rate)
+                .ifPresent(currencyModel -> {
+                    try {
+                        json.set(objectMapper.writeValueAsString(currencyModel));
+                    } catch (JsonProcessingException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+
+        return json.get();
     }
 
     public String exchange(String baseCurrencyCode, String targetCurrencyCode, Double amount) {
-        ConvertedAmount convertedAmount = null;
+        var exchangeRate = exchangeRateDAO.readByCodePair(baseCurrencyCode, targetCurrencyCode);
+        if (exchangeRate.isEmpty()) {
+            exchangeRate = getExchangeRateFromReversedExchangeRate(baseCurrencyCode, targetCurrencyCode);
+        }
+        if (exchangeRate.isEmpty()) {
+            exchangeRate = getExchangeRateFromThirdCurrency(USD_CURR_CODE, baseCurrencyCode, targetCurrencyCode);
+        }
 
-        CurrencyModel baseCurrency = null;
-        CurrencyModel targetCurrency = null;
-        double rate = 0;
-
-        try {
-            var exchangeRate = repository.getExchangeRate(baseCurrencyCode, targetCurrencyCode);
-            if (exchangeRate == null) {
-                exchangeRate = repository.getExchangeRate(targetCurrencyCode, baseCurrencyCode);
-                if (exchangeRate != null) {
-                    baseCurrency = exchangeRate.targetCurrency();
-                    targetCurrency = exchangeRate.baseCurrency();
-                    rate = 1 / exchangeRate.rate();
-                }
-            } else {
-                baseCurrency = exchangeRate.baseCurrency();
-                targetCurrency = exchangeRate.targetCurrency();
-                rate = exchangeRate.rate();
-            }
-            if (exchangeRate == null) {
-                var exchangeRateUsdBaseCurrency = repository.getExchangeRate(USD_CURR_CODE, baseCurrencyCode);
-                var exchangeRateUsdTargetCurrency = repository.getExchangeRate(USD_CURR_CODE, targetCurrencyCode);
-
-                if (exchangeRateUsdBaseCurrency != null && exchangeRateUsdTargetCurrency != null) {
-                    baseCurrency = exchangeRateUsdBaseCurrency.targetCurrency();
-                    targetCurrency = exchangeRateUsdBaseCurrency.targetCurrency();
-                    rate = exchangeRateUsdTargetCurrency.rate() / exchangeRateUsdBaseCurrency.rate();
-                }
-            }
-            if (baseCurrency != null && targetCurrency != null) {
-                convertedAmount = new ConvertedAmount(
-                        baseCurrency,
-                        targetCurrency,
-                        rate,
-                        amount,
-                        amount * rate
-                );
+        if (exchangeRate.isPresent()) {
+            var convertedAmount = new ConvertedAmount(
+                    exchangeRate.get().baseCurrency(),
+                    exchangeRate.get().targetCurrency(),
+                    exchangeRate.get().rate(),
+                    amount,
+                    amount * exchangeRate.get().rate());
+            try {
                 return objectMapper.writeValueAsString(convertedAmount);
-            } else {
-                return "";
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
             }
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+        } else {
+            return "";
+        }
+    }
+
+    private Optional<ExchangeRateEntity> getExchangeRateFromReversedExchangeRate(String baseCurrencyCode, String targetCurrencyCode) {
+        var reversedExchangeRate = exchangeRateDAO.readByCodePair(targetCurrencyCode, baseCurrencyCode);
+        if (reversedExchangeRate.isPresent()) {
+            return Optional.of(new ExchangeRateEntity(-1,
+                    reversedExchangeRate.get().targetCurrency(),
+                    reversedExchangeRate.get().baseCurrency(),
+                    1 / reversedExchangeRate.get().rate()));
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    private Optional<ExchangeRateEntity> getExchangeRateFromThirdCurrency(String thirdCurrency,
+                                                                          String baseCurrencyCode,
+                                                                          String targetCurrencyCode) {
+        var thirdCurrencyToBaseCode = exchangeRateDAO.readByCodePair(thirdCurrency, baseCurrencyCode);
+        var thirdCurrencyToTargetCode = exchangeRateDAO.readByCodePair(thirdCurrency, targetCurrencyCode);
+
+        if (thirdCurrencyToBaseCode.isPresent()
+                && thirdCurrencyToTargetCode.isPresent()
+                && thirdCurrencyToBaseCode.get().rate() != 0) {
+            return Optional.of(new ExchangeRateEntity(0,
+                    thirdCurrencyToBaseCode.get().targetCurrency(),
+                    thirdCurrencyToTargetCode.get().targetCurrency(),
+                    thirdCurrencyToTargetCode.get().rate() / thirdCurrencyToBaseCode.get().rate()));
+        } else {
+            return Optional.empty();
         }
     }
 }

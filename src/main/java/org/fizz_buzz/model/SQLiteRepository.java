@@ -1,7 +1,11 @@
 package org.fizz_buzz.model;
 
+import org.fizz_buzz.model.entity.CurrencyEntity;
+import org.fizz_buzz.model.entity.ExchangeRateEntity;
+
 import java.sql.DriverManager;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -32,6 +36,7 @@ public class SQLiteRepository implements Repository {
         }
     }
 
+    //DELETE
     public String getUsers() {
         StringBuilder users = new StringBuilder();
         users.append("Test SELECT:");
@@ -56,6 +61,7 @@ public class SQLiteRepository implements Repository {
         return users.toString();
     }
 
+    //DELETE
     @Override
     public void putUser() {
 
@@ -78,14 +84,14 @@ public class SQLiteRepository implements Repository {
     }
 
     @Override
-    public List<CurrencyModel> getCurrencies() {
-        List<CurrencyModel> currencies = new ArrayList<>();
+    public List<CurrencyEntity> getCurrencies() {
+        List<CurrencyEntity> currencies = new ArrayList<>();
 
         try (Connection connection = DriverManager.getConnection(DB_URL);
              Statement statement = connection.createStatement()) {
             var rs = statement.executeQuery("SELECT * FROM currencies");
             while (rs.next()) {
-                currencies.add(new CurrencyModel(rs.getInt("ID"),
+                currencies.add(new CurrencyEntity(rs.getInt("ID"),
                         rs.getString("Code"),
                         rs.getString("FullName"),
                         rs.getString("Sign")));
@@ -98,14 +104,14 @@ public class SQLiteRepository implements Repository {
     }
 
     @Override
-    public CurrencyModel getCurrency(String currCode) {
-        CurrencyModel currency = null;
+    public CurrencyEntity getCurrency(String currCode) {
+        CurrencyEntity currency = null;
 
         try (Connection connection = DriverManager.getConnection(DB_URL);
              Statement statement = connection.createStatement()) {
             var rs = statement.executeQuery("SELECT * FROM currencies WHERE Code = '%s'".formatted(currCode));
             if (rs.next()) {
-                currency = new CurrencyModel(rs.getInt("ID"),
+                currency = new CurrencyEntity(rs.getInt("ID"),
                         rs.getString("Code"),
                         rs.getString("FullName"),
                         rs.getString("Sign"));
@@ -118,19 +124,20 @@ public class SQLiteRepository implements Repository {
     }
 
     @Override
-    public void addCurrency(CurrencyModel currency) {
+    public void addCurrency(CurrencyEntity currency) {
         try (Connection connection = DriverManager.getConnection(DB_URL);
              Statement statement = connection.createStatement()) {
-            statement.executeUpdate("INSERT into  Currencies (code, fullname, sign)\n" +
+            statement.executeUpdate("INSERT INTO  Currencies (code, fullname, sign)\n" +
                     "values ('%s', '%s', '%s');".formatted(currency.code(), currency.fullName(), currency.sign()));
-        } catch (SQLException e) {
+        }
+        catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public List<ExchangeRateModel> getExchangeRates() {
-        List<ExchangeRateModel> exchangeRates = new ArrayList<>();
+    public List<ExchangeRateEntity> getExchangeRates() {
+        List<ExchangeRateEntity> exchangeRates = new ArrayList<>();
 
         try (Connection connection = DriverManager.getConnection(DB_URL);
              Statement statement = connection.createStatement()) {
@@ -147,16 +154,16 @@ public class SQLiteRepository implements Repository {
 
             while (rs.next()) {
                 exchangeRates.add(
-                        new ExchangeRateModel(Integer.parseInt(rs.getString(1)),
-                                new CurrencyModel(Integer.parseInt(rs.getString(2)),
+                        new ExchangeRateEntity(rs.getInt(1),
+                                new CurrencyEntity(rs.getInt(2),
                                         rs.getString(3),
                                         rs.getString(4),
                                         rs.getString(5)),
-                                new CurrencyModel(Integer.parseInt(rs.getString(6)),
+                                new CurrencyEntity(rs.getInt(6),
                                         rs.getString(7),
                                         rs.getString(8),
                                         rs.getString(9)),
-                                Double.parseDouble(rs.getString(10))));
+                                rs.getDouble(10)));
             }
 
         } catch (SQLException e) {
@@ -167,8 +174,8 @@ public class SQLiteRepository implements Repository {
     }
 
     @Override
-    public ExchangeRateModel getExchangeRate(String baseCurrency, String targetCurrency) {
-        ExchangeRateModel exchangeRate = null;
+    public ExchangeRateEntity getExchangeRate(String baseCurrency, String targetCurrency) {
+        ExchangeRateEntity exchangeRate = null;
 
         try (Connection connection = DriverManager.getConnection(DB_URL);
              Statement statement = connection.createStatement()) {
@@ -187,16 +194,16 @@ public class SQLiteRepository implements Repository {
 
             if (rs.next()) {
                 exchangeRate =
-                        new ExchangeRateModel(Integer.parseInt(rs.getString(1)),
-                                new CurrencyModel(Integer.parseInt(rs.getString(2)),
+                        new ExchangeRateEntity(rs.getInt(1),
+                                new CurrencyEntity(rs.getInt(2),
                                         rs.getString(3),
                                         rs.getString(4),
                                         rs.getString(5)),
-                                new CurrencyModel(Integer.parseInt(rs.getString(6)),
+                                new CurrencyEntity(rs.getInt(6),
                                         rs.getString(7),
                                         rs.getString(8),
                                         rs.getString(9)),
-                                Double.parseDouble(rs.getString(10)));
+                                rs.getDouble(10));
             }
 
         } catch (SQLException e) {
@@ -208,18 +215,38 @@ public class SQLiteRepository implements Repository {
 
     @Override
     public void addExchangeRate(String baseCurrencyCode, String targetCurrencyCode, Double rate) {
-        try (Connection connection = DriverManager.getConnection(DB_URL);
-             Statement statement = connection.createStatement()) {
-            statement.executeUpdate("""
+        String query = """
                     INSERT INTO ExchangeRates (BaseCurrencyId, TargetCurrencyId, Rate)
                     SELECT BaseCurrency.ID,
                            TargetCurrency.ID,
-                           %s
+                           ?
                     FROM Currencies AS BaseCurrency
                              JOIN Currencies AS TargetCurrency
-                    WHERE BaseCurrency.Code = '%s'
-                      AND TargetCurrency.Code = '%s';"""
-                    .formatted(rate, baseCurrencyCode, targetCurrencyCode));
+                    WHERE BaseCurrency.Code = ?
+                      AND TargetCurrency.Code = ?;""";
+
+        try (Connection connection = DriverManager.getConnection(DB_URL);
+//             Statement statement = connection.createStatement();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setDouble(1, rate);
+            preparedStatement.setString(2, baseCurrencyCode);
+            preparedStatement.setString(3, targetCurrencyCode);
+            preparedStatement.executeUpdate();
+
+            var rs = preparedStatement.getGeneratedKeys();
+            if (rs.next()) {
+                int id = rs.getInt(1);
+            }
+//            statement.executeUpdate("""
+//                    INSERT INTO ExchangeRates (BaseCurrencyId, TargetCurrencyId, Rate)
+//                    SELECT BaseCurrency.ID,
+//                           TargetCurrency.ID,
+//                           %s
+//                    FROM Currencies AS BaseCurrency
+//                             JOIN Currencies AS TargetCurrency
+//                    WHERE BaseCurrency.Code = '%s'
+//                      AND TargetCurrency.Code = '%s';"""
+//                    .formatted(rate, baseCurrencyCode, targetCurrencyCode));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
