@@ -7,7 +7,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.fizz_buzz.service.CurrencyJsonService;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 
 @WebServlet(urlPatterns = "/exchangeRate/*")
@@ -46,27 +48,65 @@ public class ExchangeRateServlet extends HttpServlet {
 
     @Override
     protected void doPatch(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-//        super.doPatch(req, resp);
         PrintWriter out = resp.getWriter();
-        var rate = req.getParameter("rate");
+        double rate = -1;
 
-        if (req.getPathInfo().matches("/\\w{6}\\b")
-                && rate != null
-                && !rate.isEmpty()) {
-            var exchangeRate = CurrencyJsonService.getInstance()
-                    .updateExchangeRate(req.getPathInfo().substring(1, 4).toUpperCase()
-                            , req.getPathInfo().substring(4, 7).toUpperCase()
-                            , Double.parseDouble(rate));
-            if (exchangeRate != null
-                    && !exchangeRate.isEmpty()) {
-                resp.setContentType("application/json");
-                resp.setStatus(HttpServletResponse.SC_OK);
-                out.println(exchangeRate);
-            } else {
-                resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Exchange rate not found");
-            }
-        } else {
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Wrong parameters");
+        if (!isCurrencies(req.getPathInfo())) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST,
+                    "Path params must be six letter string, represents pair of currencies.");
+            return;
         }
+        var bodyParams = req.getReader().readLine();
+        if (!isContainRate(bodyParams)) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST,
+                    "Body parameters must contain \"rate\" parameter. ");
+            return;
+        } else {
+            try {
+                rate = getRate(bodyParams);
+            } catch (NumberFormatException e) {
+                resp.sendError(HttpServletResponse.SC_BAD_REQUEST,
+                        "Parameter \"rate\" must be a floating number.");
+                return;
+            }
+        }
+
+        var exchangeRate = CurrencyJsonService.getInstance()
+                .updateExchangeRate(req.getPathInfo().substring(1, 4).toUpperCase()
+                        , req.getPathInfo().substring(4, 7).toUpperCase()
+                        , rate);
+        if (exchangeRate != null
+                && !exchangeRate.isEmpty()) {
+            resp.setContentType("application/json");
+            resp.setStatus(HttpServletResponse.SC_OK);
+            out.println(exchangeRate);
+        } else {
+            resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Exchange rate not found");
+        }
+    }
+
+    private boolean isCurrencies(String pathParams) {
+        return pathParams.matches("/\\w{6}\\b");
+    }
+
+    private boolean isContainRate(String bodyParams) {
+        var params = bodyParams.trim().split("&");
+        for (String param : params) {
+            if (param.matches("rate=.+")) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private double getRate(String bodyParams) {
+        var params = bodyParams.trim().split("&");
+        for (String param : params) {
+            if (param.matches("rate=.+")) {
+                return Double.parseDouble(param.split("=")[1]);
+            }
+        }
+        return -1;
     }
 }
