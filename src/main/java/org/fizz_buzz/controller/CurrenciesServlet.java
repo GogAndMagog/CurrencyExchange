@@ -10,8 +10,15 @@ import org.fizz_buzz.service.CurrencyJsonService;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-@WebServlet(urlPatterns = "/currencies")
+@WebServlet(urlPatterns = CurrenciesServlet.URL)
 public class CurrenciesServlet extends HttpServlet {
+
+    public static final String URL = "/currencies";
+
+    public static final String PARAMETER_CODE = "code";
+    public static final String PARAMETER_NAME = "name";
+    public static final String PARAMETER_SIGN = "sign";
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
@@ -30,13 +37,9 @@ public class CurrenciesServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        var code = req.getParameter("code");
-        var name = req.getParameter("name");
-        var sign = req.getParameter("sign");
-
-        if (code == null || name == null || sign == null) {
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameters");
-        }
+        var code = req.getParameter(PARAMETER_CODE);
+        var name = req.getParameter(PARAMETER_NAME);
+        var sign = req.getParameter(PARAMETER_SIGN);
 
         try {
             var answer =  CurrencyJsonService.getInstance().addCurrency(code, name, sign);

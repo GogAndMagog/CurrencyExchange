@@ -9,38 +9,28 @@ import org.fizz_buzz.service.CurrencyJsonService;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-@WebServlet(urlPatterns = "/currency/*")
+@WebServlet(urlPatterns = CurrencyServlet.URL)
 public class CurrencyServlet extends HttpServlet {
+
+    public static final String URL = "/currency/*";
+    public static final String URL_PATTERN = "/currency";
+
+    private static final String CURRENCY_NOT_FOUND = "Currency not found";
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
         PrintWriter out = resp.getWriter();
+        String currCode = req.getPathInfo().split("/")[1].toUpperCase();
+        resp.setContentType("application/json");
 
-        if (isValidParams(req.getPathInfo())) {
-            String currCode = req.getPathInfo().split("/")[1].toUpperCase();
-            resp.setContentType("application/json");
-
-            var currency = CurrencyJsonService.getInstance().getCurrency(currCode);
-            if (currency != null
-            && !currency.isEmpty()) {
-                resp.setStatus(HttpServletResponse.SC_OK);
-                out.println(currency);
-            }
-            else {
-                resp.sendError(HttpServletResponse.SC_NOT_FOUND,"Currency not found");
-            }
+        var currency = CurrencyJsonService.getInstance().getCurrency(currCode);
+        if (currency != null
+                && !currency.isEmpty()) {
+            resp.setStatus(HttpServletResponse.SC_OK);
+            out.println(currency);
         } else {
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Wrong parameters");
+            resp.sendError(HttpServletResponse.SC_NOT_FOUND, CURRENCY_NOT_FOUND);
         }
-    }
-
-    private boolean isValidParams(String paramsString) {
-        //check that parameter is single and it's fit three letter currency code
-        if (paramsString != null && !paramsString.isEmpty()) {
-            var params = paramsString.split("/");
-            return params.length == 2
-                    && params[1].length() == 3;
-        } else return false;
     }
 }

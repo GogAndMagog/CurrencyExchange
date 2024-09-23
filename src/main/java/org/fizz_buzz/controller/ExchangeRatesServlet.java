@@ -10,8 +10,15 @@ import org.fizz_buzz.service.CurrencyJsonService;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-@WebServlet(urlPatterns = "/exchangeRates")
+@WebServlet(urlPatterns = ExchangeRatesServlet.URL)
 public class ExchangeRatesServlet extends HttpServlet {
+
+    public static final String URL = "/exchangeRates";
+
+    public static final String PARAMETER_BASE_CURR_CODE = "baseCurrencyCode";
+    public static final String PARAMETER_TARGET_CURR_CODE = "targetCurrencyCode";
+    public static final String PARAMETER_RATE = "rate";
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         PrintWriter out = resp.getWriter();
@@ -28,13 +35,9 @@ public class ExchangeRatesServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        var baseCurrencyCode = req.getParameter("baseCurrencyCode");
-        var targetCurrencyCode = req.getParameter("targetCurrencyCode");
-        var rate = req.getParameter("rate");
-
-        if (baseCurrencyCode == null || targetCurrencyCode == null || rate == null) {
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameters");
-        }
+        var baseCurrencyCode = req.getParameter(PARAMETER_BASE_CURR_CODE);
+        var targetCurrencyCode = req.getParameter(PARAMETER_TARGET_CURR_CODE);
+        var rate = req.getParameter(ExchangeRatesServlet.PARAMETER_RATE);
 
         try {
             var answer = CurrencyJsonService
