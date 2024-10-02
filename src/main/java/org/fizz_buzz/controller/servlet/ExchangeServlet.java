@@ -1,4 +1,4 @@
-package org.fizz_buzz.controller;
+package org.fizz_buzz.controller.servlet;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;

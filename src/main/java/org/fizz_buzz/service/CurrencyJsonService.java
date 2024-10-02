@@ -180,4 +180,9 @@ public class CurrencyJsonService {
             return Optional.empty();
         }
     }
+
+    public String formJsonErr(String message)
+    {
+        return "{\"message\": \"%s\"}".formatted(message);
+    }
 }
