@@ -1,11 +1,11 @@
 package org.fizz_buzz.model.dao;
 
+import org.fizz_buzz.exception.EntityAlreadyExists;
 import org.fizz_buzz.model.SQLConnectionManager;
 import org.fizz_buzz.model.entity.CurrencyEntity;
 import org.fizz_buzz.model.entity.ExchangeRateEntity;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -14,7 +14,7 @@ import java.util.Optional;
 
 public class ExchangeRateSqliteDAO implements ExchangeRateDAO {
 
-    private final String DB_URL = "jdbc:sqlite::resource:ex1.db";
+    private static final String EXCHANGE_RATE = "exchange rate";
 
     @Override
     public Optional<ExchangeRateEntity> create(String baseCurrencyCode, String targetCurrencyCode, double rate) {
@@ -41,7 +41,11 @@ public class ExchangeRateSqliteDAO implements ExchangeRateDAO {
                 return Optional.empty();
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            if (e.getErrorCode() == 19) {
+                throw new EntityAlreadyExists(EXCHANGE_RATE);
+            } else {
+                throw new RuntimeException(e);
+            }
         }
     }
 
