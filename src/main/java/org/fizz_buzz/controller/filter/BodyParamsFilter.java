@@ -6,7 +6,9 @@ import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.fizz_buzz.controller.ExchangeRateServlet;
+import org.fizz_buzz.controller.servlet.ExchangeRateServlet;
+import org.fizz_buzz.service.CurrencyJsonService;
+import org.fizz_buzz.util.HTTPHelper;
 import org.fizz_buzz.util.ProjectConstants;
 
 import java.io.IOException;
@@ -18,6 +20,8 @@ public class BodyParamsFilter extends HttpFilter {
     private static final String RATE_MUST_BE_FLOAT = "Body parameter \"rate\" must be floating point number";
     private static final String NO_BODY_PARAMETERS = "No body parameters";
 
+    private final CurrencyJsonService currencyJsonService = CurrencyJsonService.getInstance();
+
     @Override
     protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws IOException, ServletException {
 
@@ -27,17 +31,17 @@ public class BodyParamsFilter extends HttpFilter {
 
             if (bodyParams == null
                     || bodyParams.isEmpty()) {
-                res.sendError(HttpServletResponse.SC_BAD_REQUEST, NO_BODY_PARAMETERS);
+                HTTPHelper.sendJsonError(res, HttpServletResponse.SC_BAD_REQUEST, NO_BODY_PARAMETERS);
                 return;
             }
 
             if (!isContainRate(bodyParams)) {
-                res.sendError(HttpServletResponse.SC_BAD_REQUEST, BODY_MUST_CONTAIN_RATE);
+                HTTPHelper.sendJsonError(res, HttpServletResponse.SC_BAD_REQUEST, BODY_MUST_CONTAIN_RATE);
                 return;
             }
 
             if (!isRateDouble(bodyParams)) {
-                res.sendError(HttpServletResponse.SC_BAD_REQUEST, RATE_MUST_BE_FLOAT);
+                HTTPHelper.sendJsonError(res, HttpServletResponse.SC_BAD_REQUEST, RATE_MUST_BE_FLOAT);
                 return;
             }
 
