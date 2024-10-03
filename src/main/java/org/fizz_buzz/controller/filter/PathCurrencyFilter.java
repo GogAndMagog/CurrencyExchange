@@ -22,8 +22,8 @@ public class PathCurrencyFilter extends HttpFilter {
     private static final String CURR_CODE_PATTERN = "/\\w{3}\\b";
     private static final String CURR_CODE_PAIR_PATTERN = "/\\w{6}\\b";
 
-    private static final String CURRENCY_ERROR_MESSAGE = "Path parameters should look like \"currency/eur\"";
-    private static final String CODE_PAIR_ERROR_MESSAGE = "Currencies should look like \"/USDBYN\"";
+    private static final String CURRENCY_ERROR_MESSAGE = "Path parameters should look like \\\"currency/eur\\\"";
+    private static final String CODE_PAIR_ERROR_MESSAGE = "Currencies should look like \\\"/USDBYN\\\"";
 
     private final CurrencyJsonService currencyJsonService = CurrencyJsonService.getInstance();
 

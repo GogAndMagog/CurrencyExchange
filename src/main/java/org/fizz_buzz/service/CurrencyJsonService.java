@@ -181,7 +181,7 @@ public class CurrencyJsonService {
         }
     }
 
-    public String formJsonErr(String message)
+    public static String formJsonErr(String message)
     {
         return "{\"message\": \"%s\"}".formatted(message);
     }

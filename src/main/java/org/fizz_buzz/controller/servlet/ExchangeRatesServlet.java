@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.fizz_buzz.service.CurrencyJsonService;
+import org.fizz_buzz.util.HTTPHelper;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -27,9 +28,7 @@ public class ExchangeRatesServlet extends HttpServlet {
             resp.setStatus(200);
             resp.setContentType("application/json");
         } catch (Exception e) {
-            out.println(e.getMessage());
-            resp.setStatus(500);
-            resp.setContentType("text/plain");
+            HTTPHelper.sendJsonError(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 
@@ -50,7 +49,7 @@ public class ExchangeRatesServlet extends HttpServlet {
             resp.setContentType("application/json");
             resp.getWriter().println(answer);
         } catch (Exception e) {
-            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            HTTPHelper.sendJsonError(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 }

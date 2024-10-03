@@ -13,11 +13,11 @@ import org.fizz_buzz.util.ProjectConstants;
 
 import java.io.IOException;
 
-@WebFilter(urlPatterns = ExchangeRateServlet.URL)
+@WebFilter(urlPatterns = { ExchangeRateServlet.URL })
 public class BodyParamsFilter extends HttpFilter {
 
-    private static final String BODY_MUST_CONTAIN_RATE = "Body parameters must contain \"rate\"";
-    private static final String RATE_MUST_BE_FLOAT = "Body parameter \"rate\" must be floating point number";
+    private static final String BODY_MUST_CONTAIN_RATE = "Body parameters must contain \\\"rate\\\"";
+    private static final String RATE_MUST_BE_FLOAT = "Body parameter \\\"rate\\\" must be floating point number";
     private static final String NO_BODY_PARAMETERS = "No body parameters";
 
     private final CurrencyJsonService currencyJsonService = CurrencyJsonService.getInstance();
@@ -25,7 +25,7 @@ public class BodyParamsFilter extends HttpFilter {
     @Override
     protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws IOException, ServletException {
 
-        if (req.getRequestURL().toString().endsWith(ExchangeRateServlet.URL)
+        if ( ExchangeRateServlet.URL.contains(req.getServletPath())
                 && req.getMethod().equalsIgnoreCase(ProjectConstants.METHOD_PATCH)) {
             var bodyParams = req.getReader().readLine();
 

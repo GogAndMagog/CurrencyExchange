@@ -17,7 +17,7 @@ public class ReqDoubleParamsFilter extends HttpFilter {
 
     public static final String NAME = "ReqDoubleParamsFilter";
 
-    private static final String PARAMETER_FLOATING_POINT_NUMBER = "\"%s\" must be floating point number";
+    private static final String PARAMETER_FLOATING_POINT_NUMBER = "\\\"%s\\\" must be floating point number";
 
     private final CurrencyJsonService currencyJsonService = CurrencyJsonService.getInstance();
 

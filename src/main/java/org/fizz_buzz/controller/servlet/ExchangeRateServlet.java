@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.fizz_buzz.service.CurrencyJsonService;
+import org.fizz_buzz.util.HTTPHelper;
 import org.fizz_buzz.util.ProjectConstants;
 
 import java.io.IOException;
@@ -34,7 +35,7 @@ public class ExchangeRateServlet extends HttpServlet {
             resp.setStatus(HttpServletResponse.SC_OK);
             out.println(exchangeRate);
         } else {
-            resp.sendError(HttpServletResponse.SC_NOT_FOUND, EXCHANGE_RATE_NOT_FOUND);
+            HTTPHelper.sendJsonError(resp, HttpServletResponse.SC_NOT_FOUND, EXCHANGE_RATE_NOT_FOUND);
         }
     }
 
@@ -66,7 +67,7 @@ public class ExchangeRateServlet extends HttpServlet {
             resp.setStatus(HttpServletResponse.SC_OK);
             out.println(exchangeRate);
         } else {
-            resp.sendError(HttpServletResponse.SC_NOT_FOUND, EXCHANGE_RATE_NOT_FOUND);
+            HTTPHelper.sendJsonError(resp, HttpServletResponse.SC_NOT_FOUND, EXCHANGE_RATE_NOT_FOUND);
         }
     }
 

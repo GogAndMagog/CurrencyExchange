@@ -18,7 +18,7 @@ public class ReqParamsFilter extends HttpFilter {
 
     public static final String NAME = "ReqParamsFilter";
 
-    private static final String PARAMETER_REQUIRED = "\"%s\"-parameter required";
+    private static final String PARAMETER_REQUIRED = "\\\"%s\\\"-parameter required";
 
     private final CurrencyJsonService currencyJsonService = CurrencyJsonService.getInstance();
 

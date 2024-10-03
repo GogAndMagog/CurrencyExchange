@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.fizz_buzz.service.CurrencyJsonService;
+import org.fizz_buzz.util.HTTPHelper;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -16,8 +17,6 @@ public class CurrencyServlet extends HttpServlet {
     public static final String URL_PATTERN = "/currency";
 
     private static final String CURRENCY_NOT_FOUND = "Currency not found";
-
-    CurrencyJsonService сurrencyJsonService = CurrencyJsonService.getInstance();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -32,9 +31,7 @@ public class CurrencyServlet extends HttpServlet {
             resp.setStatus(HttpServletResponse.SC_OK);
             out.println(currency);
         } else {
-            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            out.println(сurrencyJsonService.formJsonErr(CURRENCY_NOT_FOUND));
-//            resp.sendError(HttpServletResponse.SC_NOT_FOUND, CURRENCY_NOT_FOUND);
+            HTTPHelper.sendJsonError(resp, HttpServletResponse.SC_NOT_FOUND, CURRENCY_NOT_FOUND);
         }
     }
 }
