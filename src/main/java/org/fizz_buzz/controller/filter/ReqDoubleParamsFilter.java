@@ -26,14 +26,14 @@ public class ReqDoubleParamsFilter extends HttpFilter {
 
         if (req.getRequestURL().toString().endsWith(ExchangeRatesServlet.URL)
                 && req.getMethod().equalsIgnoreCase(ProjectConstants.METHOD_POST)) {
-            if (!isDouble(req, res, ExchangeRatesServlet.PARAMETER_RATE)) {
+            if (!filterDoubleParameters(req, res, ExchangeRatesServlet.REQ_DOUBLE_PARAMETERS)) {
                 return;
             }
         }
 
         if (req.getRequestURL().toString().endsWith(ExchangeServlet.URL)
                 && req.getMethod().equalsIgnoreCase(ProjectConstants.METHOD_GET)) {
-            if (!isDouble(req, res, ExchangeServlet.PARAM_NAME_AMOUNT)) {
+            if (!filterDoubleParameters(req, res, ExchangeServlet.REQ_DOUBLE_PARAMETERS)) {
                 return;
             }
         }
@@ -41,6 +41,18 @@ public class ReqDoubleParamsFilter extends HttpFilter {
         chain.doFilter(req, res);
     }
 
+    public boolean filterDoubleParameters(HttpServletRequest req, HttpServletResponse res, String[] parameters){
+        boolean passed = true;
+
+        for (String parameter : parameters) {
+            if (!isDouble(req, res, ExchangeServlet.PARAM_NAME_AMOUNT)) {
+                passed = false;
+                break;
+            }
+        }
+
+        return passed;
+    }
 
     public boolean isDouble(HttpServletRequest req, HttpServletResponse res, String paramName) {
         try {

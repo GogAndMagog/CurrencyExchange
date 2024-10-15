@@ -20,6 +20,9 @@ public class ExchangeRatesServlet extends HttpServlet {
     public static final String PARAMETER_TARGET_CURR_CODE = "targetCurrencyCode";
     public static final String PARAMETER_RATE = "rate";
 
+    public static final String[] REQ_PARAMETERS = {PARAMETER_BASE_CURR_CODE, PARAMETER_TARGET_CURR_CODE, PARAMETER_RATE};
+    public static final String[] REQ_DOUBLE_PARAMETERS = {PARAMETER_RATE};
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         PrintWriter out = resp.getWriter();

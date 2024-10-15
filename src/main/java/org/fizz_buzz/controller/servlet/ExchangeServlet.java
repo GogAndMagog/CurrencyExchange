@@ -22,6 +22,9 @@ public class ExchangeServlet extends HttpServlet {
     public static final String PARAM_NAME_TO = "to";
     public static final String PARAM_NAME_AMOUNT = "amount";
 
+    public static final String[] REQ_PARAMETERS = {PARAM_NAME_FROM, PARAM_NAME_TO, PARAM_NAME_AMOUNT};
+    public static final String[] REQ_DOUBLE_PARAMETERS = {PARAM_NAME_AMOUNT};
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         PrintWriter out = resp.getWriter();

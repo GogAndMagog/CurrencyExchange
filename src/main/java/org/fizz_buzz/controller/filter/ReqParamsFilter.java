@@ -27,44 +27,41 @@ public class ReqParamsFilter extends HttpFilter {
 
         if (req.getRequestURL().toString().endsWith(ExchangeRatesServlet.URL)
                 && req.getMethod().equalsIgnoreCase(ProjectConstants.METHOD_POST)) {
-            if (!isExistReqParam(req, res, ExchangeRatesServlet.PARAMETER_BASE_CURR_CODE)) {
-                return;
-            }
-            if (!isExistReqParam(req, res, ExchangeRatesServlet.PARAMETER_TARGET_CURR_CODE)) {
-                return;
-            }
-            if (!isExistReqParam(req, res, ExchangeRatesServlet.PARAMETER_RATE)) {
-                return;
+            for (String parameter : ExchangeRatesServlet.REQ_PARAMETERS) {
+                if (!processReqParams(req, res, ExchangeRatesServlet.REQ_PARAMETERS)) {
+                    return;
+                }
             }
         }
 
         if (req.getRequestURL().toString().endsWith(ExchangeServlet.URL)
                 && req.getMethod().equalsIgnoreCase(ProjectConstants.METHOD_GET)) {
-            if (!isExistReqParam(req, res, ExchangeServlet.PARAM_NAME_FROM)) {
-                return;
-            }
-            if (!isExistReqParam(req, res, ExchangeServlet.PARAM_NAME_TO)) {
-                return;
-            }
-            if (!isExistReqParam(req, res, ExchangeServlet.PARAM_NAME_AMOUNT)) {
+            if (!processReqParams(req, res, ExchangeServlet.REQ_PARAMETERS)) {
                 return;
             }
         }
 
         if (req.getRequestURL().toString().endsWith(CurrenciesServlet.URL)
                 && req.getMethod().equalsIgnoreCase(ProjectConstants.METHOD_POST)) {
-            if (!isExistReqParam(req, res, CurrenciesServlet.PARAMETER_CODE)) {
-                return;
-            }
-            if (!isExistReqParam(req, res, CurrenciesServlet.PARAMETER_NAME)) {
-                return;
-            }
-            if (!isExistReqParam(req, res, CurrenciesServlet.PARAMETER_SIGN)) {
+            if (!processReqParams(req, res, CurrenciesServlet.REQ_PARAMETERS)) {
                 return;
             }
         }
 
         chain.doFilter(req, res);
+    }
+
+    public boolean processReqParams(HttpServletRequest req, HttpServletResponse res, String[] parameters) {
+        boolean passed = true;
+
+        for (String parameter : parameters) {
+            if (!isExistReqParam(req, res, parameter)) {
+                passed = false;
+                break;
+            }
+        }
+
+        return passed;
     }
 
     public boolean isExistReqParam(HttpServletRequest req, HttpServletResponse res, String paramName) {

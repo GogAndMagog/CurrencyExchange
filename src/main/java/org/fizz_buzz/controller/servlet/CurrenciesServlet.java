@@ -20,6 +20,8 @@ public class CurrenciesServlet extends HttpServlet {
     public static final String PARAMETER_NAME = "name";
     public static final String PARAMETER_SIGN = "sign";
 
+    public static final String[] REQ_PARAMETERS = {PARAMETER_CODE, PARAMETER_NAME, PARAMETER_SIGN};
+
     private final CurrencyJsonService currencyJsonService = CurrencyJsonService.getInstance();
 
     @Override
