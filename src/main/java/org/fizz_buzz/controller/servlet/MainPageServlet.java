@@ -10,8 +10,11 @@ import java.io.IOException;
 
 @WebServlet(urlPatterns = "")
 public class MainPageServlet extends HttpServlet {
+
+    private static final String MAIN_PAGE_URL = "/index.html";
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        getServletContext().getRequestDispatcher( "/index.html").forward(req, resp);
+        getServletContext().getRequestDispatcher(MAIN_PAGE_URL).forward(req, resp);
     }
 }
