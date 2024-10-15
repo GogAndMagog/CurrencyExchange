@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.fizz_buzz.service.CurrencyJsonService;
 import org.fizz_buzz.util.HTTPHelper;
+import org.fizz_buzz.util.ProjectConstants;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -23,7 +24,7 @@ public class CurrencyServlet extends HttpServlet {
 
         PrintWriter out = resp.getWriter();
         String currCode = req.getPathInfo().split("/")[1].toUpperCase();
-        resp.setContentType("application/json");
+        resp.setContentType(ProjectConstants.JSON_CONTENT_TYPE);
 
         var currency = CurrencyJsonService.getInstance().getCurrency(currCode);
         if (currency != null

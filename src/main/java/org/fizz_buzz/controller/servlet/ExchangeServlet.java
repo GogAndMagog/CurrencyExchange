@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.fizz_buzz.service.CurrencyJsonService;
 import org.fizz_buzz.util.HTTPHelper;
+import org.fizz_buzz.util.ProjectConstants;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -37,7 +38,7 @@ public class ExchangeServlet extends HttpServlet {
                 .exchange(from, to, Double.parseDouble(amount));
         if (exchangeRate != null
                 && !exchangeRate.isEmpty()) {
-            resp.setContentType("application/json");
+            resp.setContentType(ProjectConstants.JSON_CONTENT_TYPE);
             resp.setStatus(HttpServletResponse.SC_OK);
             out.println(exchangeRate);
         } else {

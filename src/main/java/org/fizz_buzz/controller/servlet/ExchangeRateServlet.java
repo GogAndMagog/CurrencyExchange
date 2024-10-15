@@ -31,7 +31,7 @@ public class ExchangeRateServlet extends HttpServlet {
                         , req.getPathInfo().substring(4, 7).toUpperCase());
         if (exchangeRate != null
                 && !exchangeRate.isEmpty()) {
-            resp.setContentType("application/json");
+            resp.setContentType(ProjectConstants.JSON_CONTENT_TYPE);
             resp.setStatus(HttpServletResponse.SC_OK);
             out.println(exchangeRate);
         } else {
@@ -63,7 +63,7 @@ public class ExchangeRateServlet extends HttpServlet {
                         , rate);
         if (exchangeRate != null
                 && !exchangeRate.isEmpty()) {
-            resp.setContentType("application/json");
+            resp.setContentType(ProjectConstants.JSON_CONTENT_TYPE);
             resp.setStatus(HttpServletResponse.SC_OK);
             out.println(exchangeRate);
         } else {

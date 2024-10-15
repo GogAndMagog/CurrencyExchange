@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.fizz_buzz.service.CurrencyJsonService;
 import org.fizz_buzz.util.HTTPHelper;
+import org.fizz_buzz.util.ProjectConstants;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -30,8 +31,8 @@ public class CurrenciesServlet extends HttpServlet {
         PrintWriter out = resp.getWriter();
         try {
             out.println(CurrencyJsonService.getInstance().getCurrencies());
-            resp.setStatus(200);
-            resp.setContentType("application/json");
+            resp.setStatus(HttpServletResponse.SC_OK);
+            resp.setContentType(ProjectConstants.JSON_CONTENT_TYPE);
         }
         catch (Exception e) {
             HTTPHelper.sendJsonError(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
@@ -47,7 +48,7 @@ public class CurrenciesServlet extends HttpServlet {
         try {
             var answer =  currencyJsonService.addCurrency(code, name, sign);
             resp.setStatus(HttpServletResponse.SC_CREATED);
-            resp.setContentType("application/json");
+            resp.setContentType(ProjectConstants.JSON_CONTENT_TYPE);
             resp.getWriter().println(answer);
         } catch (Exception e) {
             HTTPHelper.sendJsonError(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
