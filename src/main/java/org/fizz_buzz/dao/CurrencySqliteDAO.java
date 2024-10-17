@@ -1,12 +1,12 @@
-package org.fizz_buzz.model.dao;
+package org.fizz_buzz.dao;
 
 import org.fizz_buzz.exception.EntityAlreadyExists;
-import org.fizz_buzz.model.SQLConnectionManager;
-import org.fizz_buzz.model.entity.CurrencyEntity;
+import org.fizz_buzz.model.Currency;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -20,8 +20,20 @@ public class CurrencySqliteDAO implements CurrencyDAO {
 
     private final static String CURRENCY = "currency";
 
+    private static CurrencyDAO instance;
+
+    private CurrencySqliteDAO() {
+    }
+
+    public synchronized static CurrencyDAO getInstance() {
+        if (instance == null) {
+            instance = new CurrencySqliteDAO();
+        }
+        return instance;
+    }
+
     @Override
-    public Optional<CurrencyEntity> create(CurrencyEntity currency) {
+    public Optional<Currency> create(Currency currency) {
         String query = "INSERT INTO Currencies (Code, FullName, Sign) VALUES (?, ?, ?)";
 
         try (Connection connection = SQLConnectionManager.getConnection();
@@ -32,7 +44,7 @@ public class CurrencySqliteDAO implements CurrencyDAO {
             statement.executeUpdate();
             var rs = statement.getGeneratedKeys();
             if (rs.next()) {
-                return Optional.of(new CurrencyEntity(rs.getInt(1),
+                return Optional.of(new Currency(rs.getInt(1),
                         currency.code(),
                         currency.fullName(),
                         currency.sign()));
@@ -49,10 +61,10 @@ public class CurrencySqliteDAO implements CurrencyDAO {
     }
 
     @Override
-    public Optional<CurrencyEntity> readById(int id) {
+    public Optional<Currency> readById(int id) {
         String query = "SELECT * FROM Currencies WHERE ID = ?";
 
-        CurrencyEntity currency = null;
+        Currency currency = null;
 
         try (Connection connection = SQLConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -60,7 +72,7 @@ public class CurrencySqliteDAO implements CurrencyDAO {
 
             var rs = preparedStatement.executeQuery();
             if (rs.next()) {
-                currency = new CurrencyEntity(rs.getInt(COLUMN_ID),
+                currency = new Currency(rs.getInt(COLUMN_ID),
                         rs.getString(COLUMN_CODE),
                         rs.getString(COLUMN_FULL_NAME),
                         rs.getString(COLUMN_SIGN));
@@ -73,10 +85,10 @@ public class CurrencySqliteDAO implements CurrencyDAO {
     }
 
     @Override
-    public Optional<CurrencyEntity> readByCode(String code) {
+    public Optional<Currency> readByCode(String code) {
         String query = "SELECT * FROM Currencies WHERE Code = ?";
 
-        CurrencyEntity currency = null;
+        Currency currency = null;
 
         try (Connection connection = SQLConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -84,7 +96,7 @@ public class CurrencySqliteDAO implements CurrencyDAO {
 
             var rs = preparedStatement.executeQuery();
             if (rs.next()) {
-                currency = new CurrencyEntity(rs.getInt(COLUMN_ID),
+                currency = new Currency(rs.getInt(COLUMN_ID),
                         rs.getString(COLUMN_CODE),
                         rs.getString(COLUMN_FULL_NAME),
                         rs.getString(COLUMN_SIGN));
@@ -97,15 +109,15 @@ public class CurrencySqliteDAO implements CurrencyDAO {
     }
 
     @Override
-    public List<CurrencyEntity> readAll() {
-        List<CurrencyEntity> currencies = new ArrayList<>();
+    public List<Currency> readAll() {
+        List<Currency> currencies = new ArrayList<>();
         String query = "SELECT * FROM main.Currencies";
 
         try (Connection connection = SQLConnectionManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             var rs = statement.executeQuery();
             while (rs.next()) {
-                currencies.add(new CurrencyEntity(rs.getInt(COLUMN_ID),
+                currencies.add(new Currency(rs.getInt(COLUMN_ID),
                         rs.getString(COLUMN_CODE),
                         rs.getString(COLUMN_FULL_NAME),
                         rs.getString(COLUMN_SIGN)));

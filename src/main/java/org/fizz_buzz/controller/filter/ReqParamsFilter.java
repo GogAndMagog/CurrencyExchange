@@ -8,7 +8,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.fizz_buzz.controller.servlet.CurrenciesServlet;
 import org.fizz_buzz.controller.servlet.ExchangeRatesServlet;
 import org.fizz_buzz.controller.servlet.ExchangeServlet;
-import org.fizz_buzz.service.CurrencyJsonService;
 import org.fizz_buzz.util.HTTPHelper;
 import org.fizz_buzz.util.ProjectConstants;
 
@@ -16,11 +15,7 @@ import java.io.IOException;
 
 public class ReqParamsFilter extends HttpFilter {
 
-    public static final String NAME = "ReqParamsFilter";
-
     private static final String PARAMETER_REQUIRED = "\\\"%s\\\"-parameter required";
-
-    private final CurrencyJsonService currencyJsonService = CurrencyJsonService.getInstance();
 
     @Override
     protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws IOException, ServletException {

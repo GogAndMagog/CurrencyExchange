@@ -7,7 +7,6 @@ import jakarta.servlet.http.HttpFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.fizz_buzz.controller.servlet.ExchangeRateServlet;
-import org.fizz_buzz.service.CurrencyJsonService;
 import org.fizz_buzz.util.HTTPHelper;
 import org.fizz_buzz.util.ProjectConstants;
 
@@ -19,8 +18,6 @@ public class BodyParamsFilter extends HttpFilter {
     private static final String BODY_MUST_CONTAIN_RATE = "Body parameters must contain \\\"rate\\\"";
     private static final String RATE_MUST_BE_FLOAT = "Body parameter \\\"rate\\\" must be floating point number";
     private static final String NO_BODY_PARAMETERS = "No body parameters";
-
-    private final CurrencyJsonService currencyJsonService = CurrencyJsonService.getInstance();
 
     @Override
     protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws IOException, ServletException {

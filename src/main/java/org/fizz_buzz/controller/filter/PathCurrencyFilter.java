@@ -8,7 +8,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.fizz_buzz.controller.servlet.CurrencyServlet;
 import org.fizz_buzz.controller.servlet.ExchangeRateServlet;
-import org.fizz_buzz.service.CurrencyJsonService;
 import org.fizz_buzz.util.HTTPHelper;
 
 import java.io.IOException;
@@ -24,8 +23,6 @@ public class PathCurrencyFilter extends HttpFilter {
 
     private static final String CURRENCY_ERROR_MESSAGE = "Path parameters should look like \\\"currency/eur\\\"";
     private static final String CODE_PAIR_ERROR_MESSAGE = "Currencies should look like \\\"/USDBYN\\\"";
-
-    private final CurrencyJsonService currencyJsonService = CurrencyJsonService.getInstance();
 
     @Override
     protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws IOException, ServletException {

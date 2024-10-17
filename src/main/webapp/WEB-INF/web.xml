@@ -9,6 +9,14 @@
         <filter-name>ReqDoubleParamsFilter</filter-name>
         <filter-class>org.fizz_buzz.controller.filter.ReqDoubleParamsFilter</filter-class>
     </filter>
+    <filter>
+        <filter-name>FilterA</filter-name>
+        <filter-class>org.fizz_buzz.controller.filter.ReqCurrencyFilter</filter-class>
+    </filter>
+    <filter>
+        <filter-name>FilterB</filter-name>
+        <filter-class>org.fizz_buzz.controller.filter.ReqCurrencyExistsFilter</filter-class>
+    </filter>
 
     <filter-mapping>
         <filter-name>ReqParamsFilter</filter-name>
@@ -22,13 +30,22 @@
         <url-pattern>/exchange</url-pattern>
         <url-pattern>/currencies</url-pattern>
     </filter-mapping>
+    <filter-mapping>
+        <filter-name>FilterA</filter-name>
+        <url-pattern>/exchangeRates</url-pattern>
+        <url-pattern>/currencies</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>FilterB</filter-name>
+        <url-pattern>/exchangeRates</url-pattern>
+    </filter-mapping>
 
-    <servlet>
-        <servlet-name>TestServlet</servlet-name>
-        <servlet-class>org.fizz_buzz.controller.servlet.TestServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>TestServlet</servlet-name>
-        <url-pattern>/test</url-pattern>
-    </servlet-mapping>
+<!--    <servlet>-->
+<!--        <servlet-name>TestServlet</servlet-name>-->
+<!--        <servlet-class>org.fizz_buzz.controller.servlet.TestServlet</servlet-class>-->
+<!--    </servlet>-->
+<!--    <servlet-mapping>-->
+<!--        <servlet-name>TestServlet</servlet-name>-->
+<!--        <url-pattern>/test</url-pattern>-->
+<!--    </servlet-mapping>-->
 </web-app>

@@ -5,7 +5,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.fizz_buzz.service.CurrencyJsonService;
+import org.fizz_buzz.service.CurrencyExchangeJsonService;
+import org.fizz_buzz.service.CurrencyExchangeService;
 import org.fizz_buzz.util.HTTPHelper;
 import org.fizz_buzz.util.ProjectConstants;
 
@@ -26,6 +27,8 @@ public class ExchangeServlet extends HttpServlet {
     public static final String[] REQ_PARAMETERS = {PARAM_NAME_FROM, PARAM_NAME_TO, PARAM_NAME_AMOUNT};
     public static final String[] REQ_DOUBLE_PARAMETERS = {PARAM_NAME_AMOUNT};
 
+    private final CurrencyExchangeService<String> currencyExchangeService = CurrencyExchangeJsonService.getInstance();
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         PrintWriter out = resp.getWriter();
@@ -34,8 +37,7 @@ public class ExchangeServlet extends HttpServlet {
         var to = req.getParameter(PARAM_NAME_TO);
         var amount = req.getParameter(PARAM_NAME_AMOUNT);
 
-        var exchangeRate = CurrencyJsonService.getInstance()
-                .exchange(from, to, Double.parseDouble(amount));
+        var exchangeRate = currencyExchangeService.exchange(from, to, Double.parseDouble(amount));
         if (exchangeRate != null
                 && !exchangeRate.isEmpty()) {
             resp.setContentType(ProjectConstants.JSON_CONTENT_TYPE);

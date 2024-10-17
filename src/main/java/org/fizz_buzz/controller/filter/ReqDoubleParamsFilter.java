@@ -7,7 +7,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.fizz_buzz.controller.servlet.ExchangeRatesServlet;
 import org.fizz_buzz.controller.servlet.ExchangeServlet;
-import org.fizz_buzz.service.CurrencyJsonService;
 import org.fizz_buzz.util.HTTPHelper;
 import org.fizz_buzz.util.ProjectConstants;
 
@@ -15,11 +14,7 @@ import java.io.IOException;
 
 public class ReqDoubleParamsFilter extends HttpFilter {
 
-    public static final String NAME = "ReqDoubleParamsFilter";
-
     private static final String PARAMETER_FLOATING_POINT_NUMBER = "\\\"%s\\\" must be floating point number";
-
-    private final CurrencyJsonService currencyJsonService = CurrencyJsonService.getInstance();
 
     @Override
     public void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws IOException, ServletException {
@@ -45,7 +40,7 @@ public class ReqDoubleParamsFilter extends HttpFilter {
         boolean passed = true;
 
         for (String parameter : parameters) {
-            if (!isDouble(req, res, ExchangeServlet.PARAM_NAME_AMOUNT)) {
+            if (!isDouble(req, res, parameter)) {
                 passed = false;
                 break;
             }

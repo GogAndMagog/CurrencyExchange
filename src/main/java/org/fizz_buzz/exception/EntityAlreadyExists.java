@@ -10,6 +10,6 @@ public class EntityAlreadyExists extends RuntimeException {
 
     @Override
     public String getMessage() {
-        return "Entity %s already exists".formatted(message);
+        return "%s already exists".formatted(message);
     }
 }

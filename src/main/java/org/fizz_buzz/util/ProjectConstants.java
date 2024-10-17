@@ -6,4 +6,6 @@ public class ProjectConstants {
     public static final String METHOD_PATCH = "PATCH";
 
     public static final String JSON_CONTENT_TYPE = "application/json";
+
+    public static final String USD_CURR_CODE = "USD";
 }
