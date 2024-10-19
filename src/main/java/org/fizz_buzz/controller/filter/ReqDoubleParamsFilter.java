@@ -51,7 +51,7 @@ public class ReqDoubleParamsFilter extends HttpFilter {
 
     public boolean isDouble(HttpServletRequest req, HttpServletResponse res, String paramName) {
         try {
-            Double.parseDouble(req.getParameter(paramName));
+            Double.parseDouble(req.getParameter(paramName).replace(',','.'));
             return true;
         } catch (NumberFormatException numberFormatException) {
             HTTPHelper.sendJsonError(res, HttpServletResponse.SC_BAD_REQUEST, PARAMETER_FLOATING_POINT_NUMBER.formatted(paramName));

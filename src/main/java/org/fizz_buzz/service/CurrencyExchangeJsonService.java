@@ -13,6 +13,7 @@ public class CurrencyExchangeJsonService implements CurrencyExchangeService<Stri
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final ExchangeRateDAO exchangeRateDAO = ExchangeRateSqliteDAO.getInstance();
+    private final double SCALE = Math.pow(10, 2);
 
     private static CurrencyExchangeService<String> instance;
 
@@ -44,7 +45,7 @@ public class CurrencyExchangeJsonService implements CurrencyExchangeService<Stri
                     exchangeRate.get().targetCurrency(),
                     exchangeRate.get().rate(),
                     amount,
-                    amount * exchangeRate.get().rate());
+                    (Math.floor((amount * exchangeRate.get().rate()) * SCALE) / SCALE));
             try {
                 return objectMapper.writeValueAsString(convertedAmount);
             } catch (JsonProcessingException e) {

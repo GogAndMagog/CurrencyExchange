@@ -35,7 +35,7 @@ public class ExchangeServlet extends HttpServlet {
 
         var from = req.getParameter(PARAM_NAME_FROM);
         var to = req.getParameter(PARAM_NAME_TO);
-        var amount = req.getParameter(PARAM_NAME_AMOUNT);
+        var amount = req.getParameter(PARAM_NAME_AMOUNT).replace(',','.');
 
         var exchangeRate = currencyExchangeService.exchange(from, to, Double.parseDouble(amount));
         if (exchangeRate != null

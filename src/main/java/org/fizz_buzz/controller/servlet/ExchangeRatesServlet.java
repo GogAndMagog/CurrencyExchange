@@ -48,7 +48,7 @@ public class ExchangeRatesServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         var baseCurrencyCode = req.getParameter(PARAMETER_BASE_CURR_CODE);
         var targetCurrencyCode = req.getParameter(PARAMETER_TARGET_CURR_CODE);
-        var rate = req.getParameter(ExchangeRatesServlet.PARAMETER_RATE);
+        var rate = req.getParameter(ExchangeRatesServlet.PARAMETER_RATE).replace(',','.');
 
         try {
             var answer = addExchangeRate(baseCurrencyCode,

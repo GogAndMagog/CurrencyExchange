@@ -12,17 +12,18 @@ import org.fizz_buzz.util.ProjectConstants;
 
 import java.io.IOException;
 
-@WebFilter(urlPatterns = { ExchangeRateServlet.URL })
+@WebFilter(urlPatterns = {ExchangeRateServlet.URL})
 public class BodyParamsFilter extends HttpFilter {
 
     private static final String BODY_MUST_CONTAIN_RATE = "Body parameters must contain \\\"rate\\\"";
     private static final String RATE_MUST_BE_FLOAT = "Body parameter \\\"rate\\\" must be floating point number";
+    private static final String RATE_MUST_BE_POSITIVE = "Body parameter \\\"rate\\\" must be positive";
     private static final String NO_BODY_PARAMETERS = "No body parameters";
 
     @Override
     protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws IOException, ServletException {
 
-        if ( ExchangeRateServlet.URL.contains(req.getServletPath())
+        if (ExchangeRateServlet.URL.contains(req.getServletPath())
                 && req.getMethod().equalsIgnoreCase(ProjectConstants.METHOD_PATCH)) {
             var bodyParams = req.getReader().readLine();
 
@@ -39,6 +40,11 @@ public class BodyParamsFilter extends HttpFilter {
 
             if (!isRateDouble(bodyParams)) {
                 HTTPHelper.sendJsonError(res, HttpServletResponse.SC_BAD_REQUEST, RATE_MUST_BE_FLOAT);
+                return;
+            }
+
+            if (!isPositive(bodyParams, ExchangeRateServlet.RATE_PATTERN)){
+                HTTPHelper.sendJsonError(res, HttpServletResponse.SC_BAD_REQUEST, RATE_MUST_BE_POSITIVE);
                 return;
             }
 
@@ -64,7 +70,7 @@ public class BodyParamsFilter extends HttpFilter {
         for (String param : params) {
             if (param.matches(ExchangeRateServlet.RATE_PATTERN)) {
                 try {
-                    Double.parseDouble(param.split("=")[1]);
+                    Double.parseDouble(param.split("=")[1].replace(',', '.'));
                     return true;
                 } catch (NumberFormatException e) {
                     return false;
@@ -73,5 +79,17 @@ public class BodyParamsFilter extends HttpFilter {
         }
 
         return false;
+    }
+
+    private boolean isPositive(String bodyParams, String parameter) {
+        var params = bodyParams.trim().split("&");
+        for (String param : params) {
+            if (param.matches(ExchangeRateServlet.RATE_PATTERN)
+                    && param.split("=")[1].trim().startsWith("-")) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

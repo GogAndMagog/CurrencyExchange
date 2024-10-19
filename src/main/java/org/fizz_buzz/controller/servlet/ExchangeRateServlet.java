@@ -80,7 +80,7 @@ public class ExchangeRateServlet extends HttpServlet {
         var params = bodyParams.trim().split("&");
         for (String param : params) {
             if (param.matches(RATE_PATTERN)) {
-                return Double.parseDouble(param.split("=")[1]);
+                return Double.parseDouble(param.split("=")[1].replace(',','.'));
             }
         }
 

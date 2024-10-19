@@ -7,6 +7,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.fizz_buzz.controller.ParameterLength;
 import org.fizz_buzz.dao.CurrencyDAO;
 import org.fizz_buzz.dao.CurrencySqliteDAO;
 import org.fizz_buzz.model.Currency;
@@ -26,8 +27,18 @@ public class CurrenciesServlet extends HttpServlet {
     public static final String PARAMETER_NAME = "name";
     public static final String PARAMETER_SIGN = "sign";
 
-    public static final String[] REQ_PARAMETERS = {PARAMETER_CODE, PARAMETER_NAME, PARAMETER_SIGN};
+    public static final String[] REQ_PARAMETERS = {PARAMETER_CODE,
+            PARAMETER_NAME,
+            PARAMETER_SIGN};
+
     public static final String[] REQ_CURR_PARAMETERS = {PARAMETER_CODE};
+
+    public static final ParameterLength[] REQ_PARAMETER_LENGTHS =
+            {new ParameterLength(PARAMETER_NAME, 30),
+                    new ParameterLength(PARAMETER_SIGN, 5)};
+
+    public static final String[] REQ_OBSCENE_PARAMETERS = {PARAMETER_NAME,
+            PARAMETER_SIGN};
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final CurrencyDAO currencyDAO = CurrencySqliteDAO.getInstance();
@@ -40,8 +51,7 @@ public class CurrenciesServlet extends HttpServlet {
             out.println(getCurrencies());
             resp.setStatus(HttpServletResponse.SC_OK);
             resp.setContentType(ProjectConstants.JSON_CONTENT_TYPE);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             HTTPHelper.sendJsonError(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
@@ -53,7 +63,7 @@ public class CurrenciesServlet extends HttpServlet {
         var sign = req.getParameter(PARAMETER_SIGN);
 
         try {
-            var answer =  addCurrency(code, name, sign);
+            var answer = addCurrency(code, name, sign);
             resp.setStatus(HttpServletResponse.SC_CREATED);
             resp.setContentType(ProjectConstants.JSON_CONTENT_TYPE);
             resp.getWriter().println(answer);

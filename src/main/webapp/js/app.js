@@ -144,7 +144,8 @@ $(document).ready(function() {
             contentType : "application/x-www-form-urlencoded",
             data: `rate=${exchangeRate}`,
             success: function() {
-
+                // update exchange rates from DB
+                requestExchangeRates();
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 const error = JSON.parse(jqXHR.responseText);
@@ -152,11 +153,15 @@ $(document).ready(function() {
 
                 $(toast).find('.toast-body').text(error.message);
                 toast.toast("show");
+
+                // update exchange rates from DB
+                requestExchangeRates();
             }
         });
 
         // close the modal
         $('#edit-exchange-rate-modal').modal('hide');
+
     });
 
     $("#add-exchange-rate").submit(function(e) {

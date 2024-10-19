@@ -10,12 +10,28 @@
         <filter-class>org.fizz_buzz.controller.filter.ReqDoubleParamsFilter</filter-class>
     </filter>
     <filter>
-        <filter-name>FilterA</filter-name>
+        <filter-name>ReqCurrencyFilter</filter-name>
         <filter-class>org.fizz_buzz.controller.filter.ReqCurrencyFilter</filter-class>
     </filter>
     <filter>
-        <filter-name>FilterB</filter-name>
+        <filter-name>ReqCurrencyExistsFilter</filter-name>
         <filter-class>org.fizz_buzz.controller.filter.ReqCurrencyExistsFilter</filter-class>
+    </filter>
+    <filter>
+        <filter-name>ReqCurrencyISO4217Filter</filter-name>
+        <filter-class>org.fizz_buzz.controller.filter.ReqCurrencyISO4217Filter</filter-class>
+    </filter>
+    <filter>
+        <filter-name>ReqParameterLengthFilter</filter-name>
+        <filter-class>org.fizz_buzz.controller.filter.ReqParameterLengthFilter</filter-class>
+    </filter>
+    <filter>
+        <filter-name>ReqObsceneFilter</filter-name>
+        <filter-class>org.fizz_buzz.controller.filter.ReqObsceneFilter</filter-class>
+    </filter>
+    <filter>
+        <filter-name>ReqPositiveNumbersFilter</filter-name>
+        <filter-class>org.fizz_buzz.controller.filter.ReqPositiveNumbersFilter</filter-class>
     </filter>
 
     <filter-mapping>
@@ -28,16 +44,32 @@
         <filter-name>ReqDoubleParamsFilter</filter-name>
         <url-pattern>/exchangeRates</url-pattern>
         <url-pattern>/exchange</url-pattern>
-        <url-pattern>/currencies</url-pattern>
     </filter-mapping>
     <filter-mapping>
-        <filter-name>FilterA</filter-name>
+        <filter-name>ReqPositiveNumbersFilter</filter-name>
+        <url-pattern>/exchangeRates</url-pattern>
+        <url-pattern>/exchange</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>ReqCurrencyFilter</filter-name>
         <url-pattern>/exchangeRates</url-pattern>
         <url-pattern>/currencies</url-pattern>
     </filter-mapping>
     <filter-mapping>
-        <filter-name>FilterB</filter-name>
+        <filter-name>ReqCurrencyExistsFilter</filter-name>
         <url-pattern>/exchangeRates</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>ReqCurrencyISO4217Filter</filter-name>
+        <url-pattern>/currencies</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>ReqParameterLengthFilter</filter-name>
+        <url-pattern>/currencies</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>ReqObsceneFilter</filter-name>
+        <url-pattern>/currencies</url-pattern>
     </filter-mapping>
 
 </web-app>
