@@ -1,0 +1,462 @@
+{
+	"info": {
+		"_postman_id": "5c1d66ec-3465-4599-8699-76acb747243a",
+		"name": "Обмен валют тесты",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Работа с валютами",
+			"item": [
+				{
+					"name": "Получение конкретной валюты",
+					"id": "263f99f5-e20f-4fd3-a3b6-405de5dfaa66",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": "http://{{host}}/{{webapp}}/currency/usd"
+					},
+					"response": []
+				},
+				{
+					"name": "Добавление новой валюты, через POST-запрос, параметры в форме",
+					"id": "2d3ad9e9-7d1a-45ad-8906-ff150462ae44",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "code",
+									"value": "EUR",
+									"type": "text"
+								},
+								{
+									"key": "name",
+									"value": "Euro",
+									"equals": true,
+									"uuid": "215ed947-463b-4de8-99a0-6919b3682a81"
+								},
+								{
+									"key": "sign",
+									"value": "€",
+									"equals": true,
+									"uuid": "b66da16d-4b04-4469-b3d8-028b02bf98e3"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://{{host}}/{{webapp}}/currencies",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{webapp}}",
+								"currencies"
+							],
+							"query": [
+								{
+									"key": "code",
+									"value": "EUR",
+									"disabled": true
+								},
+								{
+									"key": "name",
+									"value": "Euro",
+									"disabled": true
+								},
+								{
+									"key": "sign",
+									"value": "€",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Вывод всех существующих валют",
+					"id": "fd479ea3-c78e-4de4-ab7f-cead43c58315",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": "http://{{host}}/{{webapp}}/currencies"
+					},
+					"response": []
+				}
+			],
+			"id": "920e9705-f27a-449d-a545-f74262df9aee"
+		},
+		{
+			"name": "Работа с обменными курсами",
+			"item": [
+				{
+					"name": "Получение обменных курсов",
+					"id": "27c497af-986d-4d43-9505-860e63a3f946",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": "http://{{host}}/{{webapp}}/exchangeRates"
+					},
+					"response": []
+				},
+				{
+					"name": "Добавление нового обменного курса",
+					"id": "c3801f05-55a6-4596-ae54-8fc9bc0a6ff9",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "baseCurrencyCode",
+									"value": "BYN",
+									"equals": true,
+									"uuid": "cd0615af-68b8-40e7-be9d-330b0125fa58"
+								},
+								{
+									"key": "targetCurrencyCode",
+									"value": "RUB",
+									"equals": true,
+									"uuid": "b691a79b-f1f8-4877-995d-3c82654f656e"
+								},
+								{
+									"key": "rate",
+									"value": "123",
+									"equals": true,
+									"uuid": "f89a5ce1-2121-4d39-be38-d7fb467374e4"
+								}
+							]
+						},
+						"url": "http://{{host}}/{{webapp}}/exchangeRates"
+					},
+					"response": []
+				},
+				{
+					"name": "Вывод конкретного курса",
+					"id": "4fe08979-e699-4b50-aceb-c6135941ae2e",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": "http://{{host}}/{{webapp}}/exchangeRate/USDBYN"
+					},
+					"response": []
+				},
+				{
+					"name": "Обновление обменного курса Copy",
+					"id": "648e457c-495f-4db3-9eef-caae4a9f85d7",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "junk",
+									"value": "aaa123",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "rate",
+									"value": "200.2",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://{{host}}/{{webapp}}/exchangeRate/USDBYN",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{webapp}}",
+								"exchangeRate",
+								"USDBYN"
+							],
+							"query": [
+								{
+									"key": "rate",
+									"value": "1",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "29bf5eb0-0130-415c-86f8-1ab661b99edc"
+		},
+		{
+			"name": "Обмен валют",
+			"item": [
+				{
+					"name": "Обмен 100 долларов на рубли",
+					"id": "55f27ca6-e4b3-414c-af17-3bac7d5d78e8",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "http://{{host}}/{{webapp}}/exchange?from=USD&to=RUB&amount=100",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{webapp}}",
+								"exchange"
+							],
+							"query": [
+								{
+									"key": "from",
+									"value": "USD"
+								},
+								{
+									"key": "to",
+									"value": "RUB"
+								},
+								{
+									"key": "amount",
+									"value": "100"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Обмен 100 долларов на белорусские рубли",
+					"id": "6f9556f6-fc5e-4d3b-a196-b5cc3c2799a6",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "http://{{host}}/{{webapp}}/exchange?from=USD&to=BYN&amount=100",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{webapp}}",
+								"exchange"
+							],
+							"query": [
+								{
+									"key": "from",
+									"value": "USD"
+								},
+								{
+									"key": "to",
+									"value": "BYN"
+								},
+								{
+									"key": "amount",
+									"value": "100"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Обмен 100 рублей на доллары",
+					"id": "2dd5f4c0-5bc1-45f6-9e3e-69b5274db08e",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "http://{{host}}/{{webapp}}/exchange?from=RUB&to=USD&amount=100",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{webapp}}",
+								"exchange"
+							],
+							"query": [
+								{
+									"key": "from",
+									"value": "RUB"
+								},
+								{
+									"key": "to",
+									"value": "USD"
+								},
+								{
+									"key": "amount",
+									"value": "100"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Обмен 100 рублей на белорусские рубли",
+					"id": "dc001c09-a1a1-4458-ab6e-20d3d8cc21ab",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "from",
+									"value": "RUB",
+									"equals": true,
+									"uuid": "502da3d4-786a-44d1-a554-32d93add4922"
+								},
+								{
+									"key": "to",
+									"value": "BYN",
+									"equals": true,
+									"uuid": "f79c249a-9282-498f-8945-af798a6de882"
+								},
+								{
+									"key": "amount",
+									"value": "100",
+									"equals": true,
+									"uuid": "a2b70790-a1ef-4641-95ef-a532c485e273"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://{{host}}/{{webapp}}/exchange",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{webapp}}",
+								"exchange"
+							],
+							"query": [
+								{
+									"key": "from",
+									"value": "RUB",
+									"disabled": true
+								},
+								{
+									"key": "to",
+									"value": "BYN",
+									"disabled": true
+								},
+								{
+									"key": "amount",
+									"value": "100",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "7f90df7f-1338-45d6-b538-06685ce4b389"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "735f4d2d-7535-41dc-b553-77406c999051",
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "780cb074-e223-46c2-a7cc-a803ecb1b30a",
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "host",
+			"value": "localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "webapp",
+			"value": "CurrencyExchange-1.0-SNAPSHOT",
+			"type": "string"
+		}
+	]
+}
