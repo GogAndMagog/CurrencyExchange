@@ -39,14 +39,14 @@ public class CurrencySqliteDAO implements CurrencyDAO {
         try (Connection connection = SQLConnectionManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, currency.code());
-            statement.setString(2, currency.fullName());
+            statement.setString(2, currency.name());
             statement.setString(3, currency.sign());
             statement.executeUpdate();
             var rs = statement.getGeneratedKeys();
             if (rs.next()) {
                 return Optional.of(new Currency(rs.getInt(1),
                         currency.code(),
-                        currency.fullName(),
+                        currency.name(),
                         currency.sign()));
             } else {
                 return Optional.empty();
